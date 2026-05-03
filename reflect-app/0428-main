@@ -1,0 +1,556 @@
+#Startup Code
+#cd /workspaces/Reflect-App_DET26/reflect-app
+#source venv/bin/activate
+#uvicorn main:app --reload
+
+# ── Imports ───────────────────────────────────────────
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import RedirectResponse, HTMLResponse
+from dotenv import load_dotenv
+import anthropic
+import httpx
+import os
+import json
+
+load_dotenv()
+
+app = FastAPI()
+
+# ── AI setup ──────────────────────────────────────────
+ai_client = anthropic.Anthropic(api_key=os.getenv("AI_API_KEY"))
+AI_MODEL = "claude-haiku-4-5-20251001"
+
+# ── TikTok config ─────────────────────────────────────
+TIKTOK_CLIENT_KEY = os.getenv("TIKTOK_CLIENT_KEY")
+TIKTOK_CLIENT_SECRET = os.getenv("TIKTOK_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("REDIRECT_URI")
+
+# ── Token store ───────────────────────────────────────
+user_tokens = {}
+
+# ── Load personas from data file ──────────────────────
+def load_personas():
+    data_path = os.path.join(os.path.dirname(__file__), "data", "personas.json")
+    with open(data_path, "r") as f:
+        return json.load(f)
+
+# ── Section 1: Health check ───────────────────────────
+@app.get("/")
+def home():
+    return {"status": "Reflect API is running"}
+
+# ── Section 2: Serve report page ──────────────────────
+@app.get("/report", response_class=HTMLResponse)
+async def report():
+    template_path = os.path.join(
+        os.path.dirname(__file__), "templates", "report.html"
+    )
+    with open(template_path, "r") as f:
+        return f.read()
+
+# ── Section 3: TikTok login ───────────────────────────
+@app.get("/login")
+def login():
+    tiktok_auth_url = (
+        f"https://www.tiktok.com/v2/auth/authorize/"
+        f"?client_key={TIKTOK_CLIENT_KEY}"
+        f"&response_type=code"
+        f"&scope=user.info.basic,user.info.profile,user.info.stats,video.list"
+        f"&redirect_uri={REDIRECT_URI}"
+        f"&state=reflect_state_123"
+    )
+    return RedirectResponse(url=tiktok_auth_url)
+
+# ── Section 4: TikTok callback ────────────────────────
+@app.get("/callback")
+async def callback(code: str, state: str = None):
+    async with httpx.AsyncClient() as client:
+        token_response = await client.post(
+            "https://open.tiktokapis.com/v2/oauth/token/",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={
+                "client_key": TIKTOK_CLIENT_KEY,
+                "client_secret": TIKTOK_CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+                "redirect_uri": REDIRECT_URI,
+            }
+        )
+    token_data = token_response.json()
+    open_id = token_data.get("open_id")
+    access_token = token_data.get("access_token")
+    if not access_token:
+        return {"error": "Token exchange failed", "details": token_data}
+    user_tokens[open_id] = access_token
+    return RedirectResponse(url=f"/analyze?open_id={open_id}")
+
+# ── Section 5: Fetch real TikTok data ─────────────────
+async def fetch_tiktok_data(open_id: str):
+    token = user_tokens.get(open_id)
+    if not token:
+        return None
+    async with httpx.AsyncClient() as client:
+        user_response = await client.get(
+            "https://open.tiktokapis.com/v2/user/info/",
+            headers={"Authorization": f"Bearer {token}"},
+            params={"fields": "display_name,follower_count,video_count,like_count"}
+        )
+        video_response = await client.post(
+            "https://open.tiktokapis.com/v2/video/list/",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "max_count": 20,
+                "fields": ["title", "video_description",
+                          "hashtag_names", "like_count",
+                          "comment_count", "share_count",
+                          "view_count", "duration"]
+            }
+        )
+    return {
+        "user": user_response.json().get("data", {}).get("user", {}),
+        "videos": video_response.json().get("data", {}).get("videos", [])
+    }
+
+# ── Section 6: Claude inference ───────────────────────
+def build_prompt(tiktok_data: dict, username: str) -> str:
+    video_texts = []
+    for video in tiktok_data.get("videos", []):
+        title = video.get("title", "")
+        tags = " ".join(video.get("hashtag_names", []))
+        creator = video.get("creator", "unknown")
+        watch = video.get("watch_time", 0)
+        duration = video.get("duration", 0)
+        completion = round((watch / duration * 100) if duration > 0 else 0)
+        video_texts.append(
+            f"Title: {title} | Tags: {tags} | "
+            f"Creator: {creator} | Completion: {completion}%"
+        )
+    videos_summary = "\n".join(video_texts)
+
+    return f"""
+    You are analyzing {username}'s TikTok consumption for Reflect.
+
+    Videos:
+    {videos_summary}
+
+    Return ONLY valid JSON, no markdown:
+    {{
+        "user": {{
+            "name": "{username}",
+            "overall_label": "Diverse/Balanced/Siloed/Polarized",
+            "overall_summary": "2 sentences about their media diet"
+        }},
+        "thematic_analysis": {{
+            "total_videos_analyzed": {len(tiktok_data.get("videos", []))},
+            "themes": [
+                {{
+                    "theme": "Theme Name",
+                    "percentage": 30,
+                    "engagement_level": "High/Medium/Low",
+                    "consumption_type": "Active/Passive"
+                }}
+            ],
+            "dominant_theme": "Most watched theme",
+            "theme_summary": "One sentence about themes"
+        }},
+        "dimensionality_analysis": {{
+            "polarity": {{
+                "score": 7,
+                "label": "Mostly Balanced",
+                "breakdown": {{"neutral": 60, "positive": 30, "negative": 10}},
+                "summary": "One sentence about polarity"
+            }},
+            "emotional_tone": {{
+                "score": 6,
+                "label": "Mostly Positive",
+                "breakdown": {{"positive": 65, "neutral": 28, "polarizing": 7}},
+                "summary": "One sentence about emotional tone"
+            }},
+            "echo_chamber": {{
+                "score": 7,
+                "label": "Low Risk",
+                "signal_percentage": 24,
+                "breakdown": {{"unique_sources": 78, "repeated_themes": 22}},
+                "key_themes": ["Theme1", "Theme2", "Theme3"],
+                "summary": "One sentence about echo chamber risk"
+            }}
+        }},
+        "print_summary": {{
+            "headline": "Short punchy headline",
+            "line1": "Key insight about themes",
+            "line2": "Key insight about emotional tone",
+            "line3": "Key insight about echo chamber",
+            "recommendation": "One actionable recommendation"
+        }}
+    }}
+
+    Rules:
+    - Theme percentages must add up to 100
+    - Max 6 themes, group small ones into Other
+    - Order themes highest to lowest
+    """
+
+def run_inference(tiktok_data: dict, username: str) -> dict:
+    prompt = build_prompt(tiktok_data, username)
+    response = ai_client.messages.create(
+        model=AI_MODEL,
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    raw_text = response.content[0].text.strip()
+    try:
+        if "```" in raw_text:
+            raw_text = raw_text.split("```")[1]
+            if raw_text.startswith("json"):
+                raw_text = raw_text[4:]
+        return json.loads(raw_text)
+    except json.JSONDecodeError:
+        return {"raw_response": raw_text, "error": "JSON parsing failed"}
+
+# ── Section 7: Analyze endpoint (OAuth flow) ──────────
+@app.get("/analyze")
+async def analyze(open_id: str = None):
+    if not open_id:
+        return {"error": "No open_id provided"}
+    tiktok_data = await fetch_tiktok_data(open_id)
+    if not tiktok_data:
+        return {"error": "Please login first — visit /login"}
+    username = tiktok_data.get("user", {}).get("display_name", "User")
+    return run_inference(tiktok_data, username)
+
+# ── Section 8: Dummy report endpoint ─────────────────
+@app.get("/dummy")
+async def dummy(persona: str = "diverse"):
+    import random
+    personas = load_personas()
+    if persona not in personas:
+        return {"error": f"Unknown persona: {persona}"}
+
+    tiktok_data = personas[persona]
+    username = tiktok_data.get("user", {}).get("display_name", "User")
+    meta = tiktok_data.get("metadata", {})
+
+    # Randomize watch count above 2000
+    watch_count = random.randint(2000, 5000)
+
+    data_summary = {
+        "username": username,
+        "region": meta.get("region", "Simulated"),
+        "watch_count": watch_count,
+        "like_count": meta.get("like_count", 0),
+        "saved_count": meta.get("saved_count", 0),
+        "collections": meta.get("collections", []),
+        "top_searches": meta.get("top_searches", [])[:15],
+        "watch_pattern": meta.get("watch_pattern", {}),
+        "peak_hours": meta.get("peak_hours", "unknown"),
+        "avg_session_videos": meta.get("avg_session_minutes", 0),
+        "num_sessions": meta.get("sessions_per_day", 0),
+        "like_rate": meta.get("like_rate", 0),
+        "save_rate": meta.get("save_rate", 0),
+        "devices": [],
+        "networks": []
+    }
+
+    analysis = run_inference(tiktok_data, username)
+
+    return {
+        "report_id": username,
+        "is_dummy": True,
+        "data_summary": data_summary,
+        "analysis": analysis
+    }
+
+# ── Section 9: Parse uploaded TikTok JSON ─────────────
+def parse_tiktok_json(data: dict) -> dict:
+    from datetime import datetime
+
+    # ── Searches ──────────────────────────────────────
+    searches = []
+    try:
+        search_list = data["Your Activity"]["Searches"]["SearchList"]
+        searches = [s.get("SearchTerm", "") for s in search_list
+                   if s.get("SearchTerm")]
+    except (KeyError, TypeError):
+        searches = []
+
+    # ── Collections ───────────────────────────────────
+    collections = []
+    try:
+        col_list = data["Likes and Favorites"]["Favorite Collection"][
+            "FavoriteCollectionList"]
+        collections = [c.get("FavoriteCollection", "") for c in col_list
+                      if c.get("FavoriteCollection")]
+    except (KeyError, TypeError):
+        collections = []
+
+    # ── Watch history ─────────────────────────────────
+    watch_videos = []
+    try:
+        watch_videos = data["Your Activity"]["Watch History"]["VideoList"]
+        if not isinstance(watch_videos, list):
+            watch_videos = []
+    except (KeyError, TypeError):
+        watch_videos = []
+    watch_count = len(watch_videos)
+
+    # ── Like list — handles both upper and lowercase keys ──
+    like_videos = []
+    try:
+        raw_likes = data["Likes and Favorites"]["Like List"]["ItemFavoriteList"]
+        if isinstance(raw_likes, list):
+            like_videos = raw_likes
+    except (KeyError, TypeError):
+        like_videos = []
+    like_count = len(like_videos)
+
+    # ── Saved videos ──────────────────────────────────
+    saved_videos = []
+    try:
+        raw_saved = data["Likes and Favorites"]["Favorite Videos"][
+            "FavoriteVideoList"]
+        if isinstance(raw_saved, list):
+            saved_videos = raw_saved
+    except (KeyError, TypeError):
+        saved_videos = []
+    saved_count = len(saved_videos)
+
+    # ── Profile ───────────────────────────────────────
+    username = "User"
+    region = "Unknown"
+    try:
+        profile = data["Profile And Settings"]["Profile Info"]["ProfileMap"]
+        username = profile.get("displayName", "User")
+        region = profile.get("accountRegion", "Unknown")
+    except (KeyError, TypeError):
+        pass
+
+    # ── Time pattern — works on all watch videos ──────
+    watch_pattern = {
+        "early_morning": 0,
+        "morning": 0,
+        "afternoon": 0,
+        "evening": 0,
+        "late_night": 0
+    }
+
+    sessions = []
+    prev_time = None
+    current_session = 1
+    parsed_times = []
+
+    for video in watch_videos:
+        # Handle both "Date" and "date" keys
+        date_str = video.get("Date") or video.get("date", "")
+        if not date_str:
+            continue
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            parsed_times.append(dt)
+            hour = dt.hour
+
+            if 5 <= hour < 8:
+                watch_pattern["early_morning"] += 1
+            elif 8 <= hour < 12:
+                watch_pattern["morning"] += 1
+            elif 12 <= hour < 17:
+                watch_pattern["afternoon"] += 1
+            elif 17 <= hour < 21:
+                watch_pattern["evening"] += 1
+            else:
+                watch_pattern["late_night"] += 1
+
+            if prev_time:
+                diff = abs((dt - prev_time).total_seconds() / 60)
+                if diff > 30:
+                    sessions.append(current_session)
+                    current_session = 1
+                else:
+                    current_session += 1
+            prev_time = dt
+        except (ValueError, TypeError):
+            continue
+
+    if current_session > 0 and parsed_times:
+        sessions.append(current_session)
+
+    # Convert to percentages
+    total_timed = sum(watch_pattern.values())
+    if total_timed > 0:
+        watch_pattern = {
+            k: round((v / total_timed) * 100)
+            for k, v in watch_pattern.items()
+        }
+
+    # ── Session stats ─────────────────────────────────
+    avg_session = round(sum(sessions) / len(sessions)) if sessions else 0
+    num_sessions = len(sessions)
+
+    # ── Engagement rates ──────────────────────────────
+    like_rate = round((like_count / watch_count) * 100) if watch_count > 0 else 0
+    save_rate = round((saved_count / watch_count) * 100) if watch_count > 0 else 0
+
+    # ── Peak hour ─────────────────────────────────────
+    peak_hours = max(watch_pattern, key=watch_pattern.get) if total_timed > 0 else "unknown"
+
+    # ── Device and network info ───────────────────────
+    devices = set()
+    networks = set()
+    try:
+        logins = data["Your Activity"]["Login History"]["LoginHistoryList"]
+        for login in logins:
+            model = login.get("DeviceModel", "")
+            network = login.get("NetworkType", "")
+            if model:
+                devices.add(model)
+            if network:
+                networks.add(network)
+    except (KeyError, TypeError):
+        pass
+
+    return {
+        "username": username,
+        "region": region,
+        "watch_count": watch_count,
+        "like_count": like_count,
+        "saved_count": saved_count,
+        "searches": searches,
+        "collections": collections,
+        "watch_pattern": watch_pattern,
+        "peak_hours": peak_hours,
+        "avg_session_videos": avg_session,
+        "num_sessions": num_sessions,
+        "like_rate": like_rate,
+        "save_rate": save_rate,
+        "devices": list(devices),
+        "networks": list(networks)
+    }
+
+# ── Section 10: Upload JSON endpoint ──────────────────
+@app.post("/upload-json")
+async def upload_json(file: UploadFile = File(...)):
+    contents = await file.read()
+    try:
+        data = json.loads(contents)
+    except json.JSONDecodeError:
+        return {"error": "Invalid JSON file"}
+
+    parsed = parse_tiktok_json(data)
+
+    data_summary = {
+        "username": parsed["username"],
+        "region": parsed["region"],
+        "watch_count": parsed["watch_count"],
+        "like_count": parsed["like_count"],
+        "saved_count": parsed["saved_count"],
+        "collections": parsed["collections"],
+        "top_searches": parsed["searches"][:15],
+        "watch_pattern": parsed["watch_pattern"],
+        "peak_hours": parsed["peak_hours"],
+        "avg_session_videos": parsed["avg_session_videos"],
+        "num_sessions": parsed["num_sessions"],
+        "like_rate": parsed["like_rate"],
+        "save_rate": parsed["save_rate"],
+        "devices": parsed["devices"],
+        "networks": parsed["networks"]
+    }
+
+    searches_text = "\n".join([f"- {s}" for s in parsed["searches"]])
+    collections_text = (", ".join(parsed["collections"])
+                       if parsed["collections"] else "None saved")
+
+    prompt = f"""
+    Analyze real TikTok data for Reflect media literacy platform.
+
+    USER SUMMARY:
+    - Username: {parsed["username"]}
+    - Region: {parsed["region"]}
+    - Videos watched: {parsed["watch_count"]}
+    - Videos liked: {parsed["like_count"]}
+    - Videos saved: {parsed["saved_count"]}
+    - Collections: {collections_text}
+
+    SEARCH HISTORY:
+    {searches_text}
+
+    Return ONLY valid JSON, no markdown:
+    {{
+        "user": {{
+            "name": "{parsed["username"]}",
+            "overall_label": "Diverse/Balanced/Siloed/Polarized",
+            "overall_summary": "2 honest sentences based on real data"
+        }},
+        "thematic_analysis": {{
+            "total_videos_analyzed": {parsed["watch_count"]},
+            "total_searches": {len(parsed["searches"])},
+            "themes": [
+                {{
+                    "theme": "Theme Name",
+                    "percentage": 30,
+                    "evidence": "specific searches showing this",
+                    "engagement_level": "High/Medium/Low",
+                    "consumption_type": "Active/Passive"
+                }}
+            ],
+            "dominant_theme": "Most searched theme",
+            "theme_summary": "One sentence about themes"
+        }},
+        "dimensionality_analysis": {{
+            "polarity": {{
+                "score": 7,
+                "label": "Mostly Balanced",
+                "breakdown": {{"neutral": 60, "positive": 30, "negative": 10}},
+                "summary": "One sentence based on real searches"
+            }},
+            "emotional_tone": {{
+                "score": 6,
+                "label": "Mostly Positive",
+                "breakdown": {{"positive": 65, "neutral": 28, "polarizing": 7}},
+                "summary": "One sentence based on real searches"
+            }},
+            "echo_chamber": {{
+                "score": 7,
+                "label": "Low Risk",
+                "signal_percentage": 24,
+                "breakdown": {{"unique_sources": 78, "repeated_themes": 22}},
+                "key_themes": ["Theme1", "Theme2", "Theme3"],
+                "summary": "One sentence about echo chamber risk"
+            }}
+        }},
+        "print_summary": {{
+            "headline": "Short punchy headline",
+            "line1": "Key insight about themes",
+            "line2": "Key insight about emotional tone",
+            "line3": "Key insight about echo chamber",
+            "recommendation": "One actionable recommendation"
+        }}
+    }}
+
+    Be specific — reference actual searches. Be honest.
+    Theme percentages must add up to 100. Max 6 themes.
+    """
+
+    response = ai_client.messages.create(
+        model=AI_MODEL,
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    raw_text = response.content[0].text.strip()
+    try:
+        if "```" in raw_text:
+            raw_text = raw_text.split("```")[1]
+            if raw_text.startswith("json"):
+                raw_text = raw_text[4:]
+        analysis = json.loads(raw_text)
+    except json.JSONDecodeError:
+        analysis = {"raw_response": raw_text, "error": "Parsing failed"}
+
+    return {
+        "report_id": parsed["username"],
+        "is_dummy": False,
+        "data_summary": data_summary,
+        "analysis": analysis
+    }
