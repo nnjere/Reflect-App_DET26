@@ -27,13 +27,33 @@ user_tokens = {}
 
 # ── Pre-load dummy reports on startup ─────────────────
 def preload_dummy_reports():
+    import random
     personas = load_personas()
     for key, tiktok_data in personas.items():
         username = tiktok_data.get("user", {}).get("display_name", "User")
         analysis = run_inference(tiktok_data, username)
+        meta = tiktok_data.get("metadata", {})
+        data_summary = {
+            "username": username,
+            "region": meta.get("region", "Simulated"),
+            "watch_count": random.randint(2000, 5000),
+            "like_count": meta.get("like_count", 0),
+            "saved_count": meta.get("saved_count", 0),
+            "collections": meta.get("collections", []),
+            "top_searches": meta.get("top_searches", [])[:15],
+            "watch_pattern": meta.get("watch_pattern", {}),
+            "peak_hours": meta.get("peak_hours", "evening"),
+            "avg_session_videos": meta.get("avg_session_minutes", 0),
+            "num_sessions": meta.get("sessions_per_day", 0),
+            "like_rate": meta.get("like_rate", 0),
+            "save_rate": meta.get("save_rate", 0),
+            "devices": [],
+            "networks": []
+        }
         server_reports[username] = {
             "report_id": username,
             "is_dummy": True,
+            "data_summary": data_summary,
             "analysis": analysis
         }
     print(f"Preloaded {len(personas)} dummy reports")
