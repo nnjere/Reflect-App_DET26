@@ -1336,7 +1336,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reports: memberReports })
         });
-        el.textContent = await res.text();
+        const text = await res.text();
+        el.innerHTML = text.split('\n')
+          .map(line => `<div>${line || '&nbsp;'}</div>`)
+          .join('');
 
       } else {
         const report = reports.find(r => r.id === activeId);
@@ -1347,7 +1350,10 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ report: report })
       });
-      el.textContent = await res.text();
+        const text = await res.text();
+        el.innerHTML = text.split('\n')
+          .map(line => `<div>${line || '&nbsp;'}</div>`)
+          .join('');
       }
 
     } catch(e) {
@@ -1598,15 +1604,17 @@
       <div class="receipt-view ${activeView === 'receipt' ? 'visible' : ''}">
         <div style="
           background: #f5f0e8;
-          border-radius: 20px;
-          padding: 28px;
-          font-family: 'Courier New', monospace;
-          color: #1a1410;
-          white-space: pre-wrap;
-          font-size: 13px;
-          line-height: 1.6;
-          letter-spacing: 0.3px;
-          border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        font-family: 'Courier New', monospace;
+        color: #1a1410;
+        font-size: 13px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        border: 1px solid var(--border);
+        width: fit-content;
+        margin: 0 auto;
+        text-align: center;
         ">
           <div style="
             text-align:center;
@@ -2025,11 +2033,13 @@
         padding: 28px;
         font-family: 'Courier New', monospace;
         color: #1a1410;
-        white-space: pre-wrap;
         font-size: 13px;
         line-height: 1.6;
         letter-spacing: 0.3px;
         border: 1px solid var(--border);
+        width: fit-content;
+        margin: 0 auto;
+        text-align: center;
       ">
         <div style="
           text-align:center;

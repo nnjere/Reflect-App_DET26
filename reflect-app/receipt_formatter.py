@@ -103,8 +103,8 @@ def format_individual(report: dict) -> str:
 
 # ── Blend report receipt ───────────────────────────────
 def format_blend(blend_data: dict) -> str:
-    ba = blend_data.get('blend_analysis', {})
-    names = blend_data.get('members', [])
+    ba = blend_data.get('blend_analysis', blend_data)
+    names = blend_data.get('members', ba.get('members', []))
     ps = ba.get('print_summary', {})
     div = ba.get('group_diversity', {})
     cp = ba.get('closest_pair', {})
