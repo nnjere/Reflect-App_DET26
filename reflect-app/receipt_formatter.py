@@ -2,7 +2,6 @@
 from datetime import datetime
 
 WIDTH = 32
-MEMBER_CHARS = ['/', '.', '+', 'o', '*', '=']
 
 # ── Helpers ────────────────────────────────────────────
 def center(text):
@@ -43,7 +42,7 @@ def truncate_words(text, max_words=50):
 
 def bar(pct, width=12):
     filled = round(pct / 100 * width)
-    return '\u2588' * filled + '\u2591' * (width - filled)
+    return '#' * filled + '-' * (width - filled)
 
 def clean(name):
     return name.replace('_Dummy', '')
@@ -73,7 +72,6 @@ def footer():
 # ── Group overlap bars ─────────────────────────────────
 def overlap_bars(names, comparisons):
     lines = []
-    char_map = {n: MEMBER_CHARS[i % len(MEMBER_CHARS)] for i, n in enumerate(names)}
 
     scores = {}
     for c in comparisons:
@@ -86,14 +84,13 @@ def overlap_bars(names, comparisons):
     bar_max = 20
 
     for name in names:
-        ch = char_map[name]
         score = scores.get(name, 50)
         length = max(4, round(score / 100 * bar_max))
         label = clean(name)[:11]
-        lines.append(f'{label:<12} {ch * length}')
+        lines.append(f'{label:<12} {"#" * length}')
 
     shared_len = max(4, round(shared_pct / 100 * bar_max))
-    lines.append(f'{"SHARED":<12} {"#" * shared_len}')
+    lines.append(f'{"SHARED":<12} {"-" * shared_len}')
     lines.append(center(f'{shared_pct}% group overlap'))
     return '\n'.join(lines)
 
@@ -122,24 +119,24 @@ def content_differences_section(names, diverging_themes):
 # ── Alignment matrix ───────────────────────────────────
 def alignment_matrix(names, shared_themes, diverging_themes):
     n = len(names)
-    col_w = max(5, (WIDTH - 10) // n)
+    col_w = max(6, (WIDTH - 8) // n)
     label_w = WIDTH - (col_w * n)
 
-    short_names = [short(n, col_w - 1) for n in names]
+    short_names = [short(nm, col_w - 1) for nm in names]
     header_row = ' ' * label_w + ''.join(f'{s:^{col_w}}' for s in short_names)
     rows = [header_row]
 
     shared_set = {t.get('theme', '') for t in shared_themes[:4]}
     for theme in list(shared_set)[:4]:
         row = theme[:label_w - 1].ljust(label_w)
-        row += ''.join(f'{"✓":^{col_w}}' for _ in names)
+        row += ''.join(f'{"Y":^{col_w}}' for _ in names)
         rows.append(row)
 
     for t in diverging_themes[:4]:
         theme = t.get('theme', '')[:label_w - 1].ljust(label_w)
         engagers = set(t.get('members_who_engage', []))
         row = theme + ''.join(
-            f'{"✓" if name in engagers else "✗":^{col_w}}' for name in names)
+            f'{"Y" if name in engagers else "N":^{col_w}}' for name in names)
         rows.append(row)
 
     return '\n'.join(rows)
@@ -173,14 +170,16 @@ def behaviour_section(names, reports):
     lines += ['', 'Peak Hours']
     for name in names:
         s = get_summary(name)
-        peak = peak_labels.get(s.get('peak_hours', ''), s.get('peak_hours', '—'))
+        peak = peak_labels.get(s.get('peak_hours', ''), s.get('peak_hours', '-'))
         lines.append(f'  {label(name):<14} {peak}')
 
     lines += ['', 'Engagement Style']
     for name in names:
         s = get_summary(name)
         lr = s.get('like_rate', 0)
-        style = 'very active' if lr > 30 else 'active' if lr > 15 else 'moderate' if lr > 5 else 'passive'
+        style = ('very active' if lr > 30 else
+                 'active' if lr > 15 else
+                 'moderate' if lr > 5 else 'passive')
         lines.append(f'  {label(name):<14} {style}')
 
     lines += ['', 'Like Rate']
@@ -245,7 +244,7 @@ def relationship_distance(names, comparisons):
             parts.append(connector)
 
     line = ''.join(parts)
-    return line + '\ncloser \u2190' + '\u2014' * (WIDTH - 16) + '\u2192 further'
+    return line + '\ncloser <' + '-' * (WIDTH - 10) + '> further'
 
 # ── Individual receipt ─────────────────────────────────
 def format_individual(report: dict) -> str:
@@ -261,7 +260,8 @@ def format_individual(report: dict) -> str:
 
     peak_labels = {
         'early_morning': 'early morning', 'morning': 'morning',
-        'afternoon': 'afternoon', 'evening': 'evening', 'late_night': 'late night'
+        'afternoon': 'afternoon', 'evening': 'evening',
+        'late_night': 'late night'
     }
 
     theme_lines = []
@@ -292,7 +292,7 @@ def format_individual(report: dict) -> str:
         f"  Diversity:  {echo.get('score', 0)}/10  {echo.get('label', '')}",
         divider(),
         'BEHAVIOUR SNAPSHOT',
-        f"  Peak hours:   {peak_labels.get(summary.get('peak_hours', ''), '—')}",
+        f"  Peak hours:   {peak_labels.get(summary.get('peak_hours', ''), '-')}",
         f"  Like rate:    {summary.get('like_rate', 0)}%",
         f"  Save rate:    {summary.get('save_rate', 0)}%",
         f"  Avg session:  {summary.get('avg_session_videos', 0)} videos",
