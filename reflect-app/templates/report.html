@@ -1337,9 +1337,18 @@
           body: JSON.stringify({ reports: memberReports })
         });
         const text = await res.text();
-        el.innerHTML = text.split('\n')
-          .map(line => `<div>${line || '&nbsp;'}</div>`)
-          .join('');
+        const lines = text.split('\n');
+        let section = 'header';
+        el.innerHTML = lines.map(line => {
+          if (line.startsWith('====')) section = 'footer';
+          if (section === 'header' && /^\s*\d+ People\s*$/.test(line)) {
+            const div = `<div style="text-align:center">${line || '&nbsp;'}</div>`;
+            section = 'body';
+            return div;
+          }
+          const align = section === 'body' ? 'left' : 'center';
+          return `<div style="text-align:${align}">${line || '&nbsp;'}</div>`;
+        }).join('');
 
       } else {
         const report = reports.find(r => r.id === activeId);
@@ -1351,9 +1360,18 @@
         body: JSON.stringify({ report: report })
       });
         const text = await res.text();
-        el.innerHTML = text.split('\n')
-          .map(line => `<div>${line || '&nbsp;'}</div>`)
-          .join('');
+        const lines = text.split('\n');
+        let section = 'header';
+        el.innerHTML = lines.map(line => {
+          if (line.startsWith('====')) section = 'footer';
+          if (section === 'header' && /^\s*\d+ People\s*$/.test(line)) {
+            const div = `<div style="text-align:center">${line || '&nbsp;'}</div>`;
+            section = 'body';
+            return div;
+          }
+          const align = section === 'body' ? 'left' : 'center';
+          return `<div style="text-align:${align}">${line || '&nbsp;'}</div>`;
+        }).join('');
       }
 
     } catch(e) {

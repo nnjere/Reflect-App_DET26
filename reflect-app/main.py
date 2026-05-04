@@ -847,7 +847,7 @@ async def receipt_blend(request: Request):
     # Re-run blend to get fresh analysis
     from main import run_blend_inference
     blend_data = run_blend_inference(reports_data)
-    return PlainTextResponse(format_blend(blend_data))
+    return PlainTextResponse(format_blend(blend_data, reports_data))
 
 @app.get("/receipt/print")
 async def receipt_print(count: int = 1):
@@ -881,7 +881,7 @@ async def receipt_print(count: int = 1):
         return PlainTextResponse(format_individual(selected[0]))
 
     blend_data = run_blend_inference(selected)
-    return PlainTextResponse(format_blend(blend_data))
+    return PlainTextResponse(format_blend(blend_data, selected))
     
 @app.on_event("startup")
 async def startup_event():
