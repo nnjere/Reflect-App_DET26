@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflect — Content Quality Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #faf6f1;
+      --warm: #fff9f4;
+      --dark: #1a1410;
+      --mid: #6b5e52;
+      --light: #a8998a;
+      --border: rgba(0,0,0,0.07);
+      --pink: #e879b0;
+      --purple: #c084fc;
+      --peach: #fb923c;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      text-align: center;
+      padding: 52px 24px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 52px;
+      background: linear-gradient(135deg, #c084fc, #e879b0, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--light);
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Toggle ── */
+    .toggle-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 28px 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      padding: 10px 22px;
+      border-radius: 24px;
+      border: 1.5px solid #d4c5b8;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active,
+    .toggle-btn:hover {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: white;
+    }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 0 24px;
+      display: none;
+    }
+
+    .upload-zone.visible { display: block; }
+
+    .upload-box {
+      border: 2px dashed #d4c5b8;
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-box:hover {
+      border-color: var(--pink);
+      background: #fff9fb;
+    }
+
+    .upload-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .upload-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .upload-sub {
+      font-size: 13px;
+      color: var(--light);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: var(--dark);
+      color: white;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    #file-input { display: none; }
+
+    .how-to {
+      margin-top: 24px;
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .how-to-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 12px;
+    }
+
+    .how-to-step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.5;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: var(--cream);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--dark);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Report area ── */
+    .report-area {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Data summary card ── */
+    .summary-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 6px;
+    }
+
+    .summary-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .summary-stats {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .summary-stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .summary-stat-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      line-height: 1;
+      color: var(--dark);
+    }
+
+    .summary-stat-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-top: 4px;
+    }
+
+    .searches-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .search-pill {
+      padding: 5px 12px;
+      background: var(--cream);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    .collections-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .collection-pill {
+      padding: 5px 14px;
+      background: linear-gradient(135deg, #fce7f3, #ede9fe);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    /* ── Section heading ── */
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 4px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    /* ── Overall pill ── */
+    .overall-pill {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-style: italic;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .pill-diverse   { background: #fce7f3; color: #be185d; }
+    .pill-balanced  { background: #dcfce7; color: #166534; }
+    .pill-siloed    { background: #fee2e2; color: #991b1b; }
+    .pill-polarized { background: #fff7ed; color: #9a3412; }
+
+    /* ── Score row ── */
+    .score-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .score-box {
+      flex: 1;
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .score-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .score-val.good { color: #16a34a; }
+    .score-val.mid  { color: #d97706; }
+    .score-val.bad  { color: #dc2626; }
+
+    .score-name {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-top: 4px;
+    }
+
+    /* ── Theme bars ── */
+    .theme-row { margin-bottom: 16px; }
+
+    .theme-row-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .theme-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .theme-meta {
+      font-size: 12px;
+      color: var(--light);
+    }
+
+    .theme-pct {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 20px;
+    }
+
+    .bar-0 { background: linear-gradient(90deg, #c084fc, #e879b0); }
+    .bar-1 { background: linear-gradient(90deg, #fb923c, #f87171); }
+    .bar-2 { background: linear-gradient(90deg, #e879b0, #fb7185); }
+    .bar-3 { background: linear-gradient(90deg, #a78bfa, #c084fc); }
+    .bar-4 { background: linear-gradient(90deg, #60a5fa, #a78bfa); }
+    .bar-5 { background: linear-gradient(90deg, #86efac, #60a5fa); }
+
+    /* ── Breakdown list ── */
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f0eb;
+    }
+
+    .breakdown-item:last-child { border-bottom: none; }
+
+    .breakdown-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .dot-green  { background: #22c55e; }
+    .dot-yellow { background: #fbbf24; }
+    .dot-red    { background: #f87171; }
+    .dot-blue   { background: #60a5fa; }
+    .dot-orange { background: #fb923c; }
+
+    .breakdown-text strong {
+      font-size: 14px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .breakdown-text span {
+      font-size: 12px;
+      color: var(--light);
+    }
+
+    .breakdown-pct {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ── Signal bar ── */
+    .signal-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+
+    .signal-track {
+      height: 6px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .signal-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #86efac, #60a5fa);
+    }
+
+    .signal-fill.high {
+      background: linear-gradient(90deg, #f87171, #fb923c);
+    }
+
+    /* ── Key themes ── */
+    .key-themes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .theme-tag {
+      padding: 5px 14px;
+      background: var(--cream);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    /* ── Print card ── */
+    .print-card {
+      background: var(--dark);
+      color: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .print-card .section-label { color: #666; }
+
+    .print-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .print-lines {
+      border-top: 1px solid #333;
+      padding-top: 16px;
+    }
+
+    .print-line {
+      padding: 10px 0;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    .print-rec {
+      margin-top: 16px;
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    .print-rec strong {
+      color: white;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .loading-star {
+      font-size: 32px;
+      animation: spin 2s linear infinite;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--light);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .evidence-text {
+      font-size: 12px;
+      color: var(--light);
+      font-style: italic;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="logo">Reflect</div>
+    <div class="tagline">Your media consumption, understood</div>
+  </div>
+
+  <!-- Toggle -->
+  <div class="toggle-wrap">
+    <button class="toggle-btn active"
+      onclick="switchMode('diverse', this)">
+      Diverse Consumer
+    </button>
+    <button class="toggle-btn"
+      onclick="switchMode('echo', this)">
+      Echo Chamber User
+    </button>
+    <button class="toggle-btn"
+      onclick="switchMode('upload', this)">
+      Upload Your Data
+    </button>
+  </div>
+
+  <!-- Upload zone -->
+  <div class="upload-zone" id="upload-zone">
+    <div class="upload-box" onclick="document.getElementById('file-input').click()">
+      <div class="upload-icon">✦</div>
+      <div class="upload-title">Upload your TikTok data</div>
+      <div class="upload-sub">
+        Drop your downloaded TikTok JSON file here.<br>
+        Your data stays private — analyzed and deleted immediately.
+      </div>
+      <button class="upload-btn">Choose file</button>
+      <input type="file" id="file-input" accept=".json"
+             onchange="handleUpload(this)">
+    </div>
+
+    <div class="how-to">
+      <div class="how-to-title">How to get your TikTok data</div>
+      <div class="how-to-step">
+        <div class="step-num">1</div>
+        <div>Open TikTok → tap your profile → tap the menu (☰) → Settings & Privacy</div>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">2</div>
+        <div>Tap Account → Download your data → Select JSON format → Request data</div>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">3</div>
+        <div>TikTok emails you a download link within 1-3 days</div>
+      </div>
+      <div class="how-to-step">
+        <div class="step-num">4</div>
+        <div>Download the ZIP → extract it → upload the JSON file here</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report area -->
+  <div class="report-area" id="report-area"></div>
+
+<script>
+  let currentMode = 'diverse';
+
+  function switchMode(mode, btn) {
+    document.querySelectorAll('.toggle-btn')
+      .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = mode;
+
+    const uploadZone = document.getElementById('upload-zone');
+    const reportArea = document.getElementById('report-area');
+
+    if (mode === 'upload') {
+      uploadZone.classList.add('visible');
+      reportArea.innerHTML = '';
+    } else {
+      uploadZone.classList.remove('visible');
+      loadPersona(mode === 'diverse' ? 'diverse' : 'echo_chamber');
+    }
+  }
+
+  async function loadPersona(persona) {
+    const area = document.getElementById('report-area');
+    area.innerHTML = `
+      <div class="loading">
+        <span class="loading-star">✦</span>
+        <div class="loading-text">Analyzing media diet...</div>
+      </div>`;
+
+    try {
+      const res = await fetch('/analyze?persona=' + persona);
+      const data = await res.json();
+      renderReport(data, null);
+    } catch(e) {
+      area.innerHTML = `<div class="loading">
+        <div class="loading-text">Error: ${e}</div></div>`;
+    }
+  }
+
+  async function handleUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const uploadZone = document.getElementById('upload-zone');
+    const area = document.getElementById('report-area');
+
+    uploadZone.classList.remove('visible');
+    area.innerHTML = `
+      <div class="loading">
+        <span class="loading-star">✦</span>
+        <div class="loading-text">
+          Reading your TikTok data...<br>
+          <span style="font-size:12px; color:#bbb; margin-top:8px; display:block">
+            This may take 20-30 seconds
+          </span>
+        </div>
+      </div>`;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/upload-json', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.error) {
+        area.innerHTML = `<div class="loading">
+          <div class="loading-text">Error: ${data.error}</div></div>`;
+        return;
+      }
+      renderReport(data.analysis, data.data_summary);
+    } catch(e) {
+      area.innerHTML = `<div class="loading">
+        <div class="loading-text">Upload failed: ${e}</div></div>`;
+    }
+  }
+
+  function renderReport(d, summary) {
+    const area = document.getElementById('report-area');
+    const user   = d.user || {};
+    const themes = d.thematic_analysis || {};
+    const dims   = d.dimensionality_analysis || {};
+    const pol    = dims.polarity || {};
+    const emo    = dims.emotional_tone || {};
+    const echo   = dims.echo_chamber || {};
+    const print  = d.print_summary || {};
+
+    const label = user.overall_label || 'Balanced';
+    const pillClass = {
+      'Diverse':   'pill-diverse',
+      'Balanced':  'pill-balanced',
+      'Siloed':    'pill-siloed',
+      'Polarized': 'pill-polarized'
+    }[label] || 'pill-balanced';
+
+    function scoreClass(s, invert) {
+      const v = invert ? 11 - s : s;
+      return v >= 7 ? 'good' : v >= 4 ? 'mid' : 'bad';
+    }
+
+    // Data summary section (only for uploads)
+    let summaryHTML = '';
+    if (summary) {
+      const searches = (summary.top_searches || [])
+        .map(s => `<span class="search-pill">${s}</span>`).join('');
+      const cols = (summary.collections || [])
+        .map(c => `<span class="collection-pill">${c}</span>`).join('');
+
+      summaryHTML = `
+        <div class="summary-card">
+          <div class="summary-label">Your Data — At a Glance</div>
+          <div class="summary-title">
+            ${summary.username || 'Your TikTok Activity'}
+          </div>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <div class="summary-stat-val">${summary.watch_count || 0}</div>
+              <div class="summary-stat-label">Videos Watched</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-stat-val">${summary.like_count || 0}</div>
+              <div class="summary-stat-label">Videos Liked</div>
+            </div>
+            <div class="summary-stat">
+              <div class="summary-stat-val">${summary.saved_count || 0}</div>
+              <div class="summary-stat-label">Videos Saved</div>
+            </div>
+          </div>
+          ${cols ? `
+            <div class="summary-label" style="margin-bottom:8px">
+              Your Collections
+            </div>
+            <div class="collections-row">${cols}</div>
+          ` : ''}
+          ${searches ? `
+            <div class="summary-label" style="margin-bottom:8px">
+              What You Searched For
+            </div>
+            <div class="searches-wrap">${searches}</div>
+          ` : ''}
+        </div>`;
+    }
+
+    // Theme bars
+    const themeBars = (themes.themes || []).slice(0, 5).map((t, i) => `
+      <div class="theme-row">
+        <div class="theme-row-top">
+          <div>
+            <span class="theme-name">${t.theme}</span>
+            <span class="theme-meta">
+              · ${t.consumption_type || ''} · ${t.engagement_level || ''}
+            </span>
+          </div>
+          <span class="theme-pct">${t.percentage}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bar-${i}" style="width:${t.percentage}%"></div>
+        </div>
+        ${t.evidence ? `<div class="evidence-text">${t.evidence}</div>` : ''}
+      </div>`).join('');
+
+    // Key themes
+    const keyThemes = (echo.key_themes || [])
+      .map(t => `<span class="theme-tag">${t}</span>`).join('');
+
+    const signalHigh = (echo.signal_percentage || 0) > 50;
+
+    area.innerHTML = `
+      ${summaryHTML}
+
+      <!-- Overview -->
+      <div class="card">
+        <div class="section-label">Your Overview</div>
+        <div class="card-title">
+          ${summary ? 'Your Media Diet' : 'Digital Patterns'}
+        </div>
+        <span class="overall-pill ${pillClass}">${label}</span>
+        <div class="card-sub">${user.overall_summary || ''}</div>
+
+        <div class="score-row">
+          <div class="score-box">
+            <div class="score-val ${scoreClass(pol.score || 5, false)}">
+              ${pol.score || '—'}/10
+            </div>
+            <div class="score-name">Polarity</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val ${scoreClass(emo.score || 5, false)}">
+              ${emo.score || '—'}/10
+            </div>
+            <div class="score-name">Emotional Tone</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val ${scoreClass(echo.score || 5, false)}">
+              ${echo.score || '—'}/10
+            </div>
+            <div class="score-name">Diversity</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Themes -->
+      <div class="card">
+        <div class="section-label">Thematic Analysis</div>
+        <div class="card-title">
+          ${themes.dominant_theme || 'Content'} Dominant
+        </div>
+        <div class="card-sub">${themes.theme_summary || ''}</div>
+        ${themeBars}
+        <div class="divider"></div>
+        <div style="font-size:12px; color:var(--light)">
+          Based on ${themes.total_videos_analyzed || 0} videos
+          ${themes.total_searches ? `· ${themes.total_searches} searches` : ''}
+        </div>
+      </div>
+
+      <!-- Emotional tone -->
+      <div class="card">
+        <div class="section-label">Emotional Tone</div>
+        <div class="card-title">${emo.label || ''}</div>
+        <div class="card-sub">${emo.summary || ''}</div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Positive content</strong>
+              <span>Uplifting, aspirational, motivational</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.positive || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-yellow"></div>
+            <div class="breakdown-text">
+              <strong>Neutral content</strong>
+              <span>Informational, observational</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.neutral || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-red"></div>
+            <div class="breakdown-text">
+              <strong>Polarizing content</strong>
+              <span>Emotionally charged or opinion-driven</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.polarizing || 0}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Polarity -->
+      <div class="card">
+        <div class="section-label">Content Polarity</div>
+        <div class="card-title">${pol.label || ''}</div>
+        <div class="card-sub">${pol.summary || ''}</div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Neutral</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.neutral || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-blue"></div>
+            <div class="breakdown-text">
+              <strong>Positive</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.positive || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-red"></div>
+            <div class="breakdown-text">
+              <strong>Negative</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.negative || 0}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Echo chamber -->
+      <div class="card">
+        <div class="section-label">
+          Echo Chamber & Reinforcement
+        </div>
+        <div class="card-title">${echo.label || ''}</div>
+        <div class="card-sub">${echo.summary || ''}</div>
+        <div class="signal-label">
+          Echo chamber signal —
+          ${echo.score <= 3 ? 'High Risk' :
+            echo.score <= 6 ? 'Medium Risk' : 'Low Risk'}
+          (${echo.signal_percentage || 0}%)
+        </div>
+        <div class="signal-track">
+          <div class="signal-fill ${signalHigh ? 'high' : ''}"
+               style="width:${echo.signal_percentage || 0}%">
+          </div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Unique sources</strong>
+              <span>Different creators, communities, perspectives</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${echo.breakdown?.unique_sources || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-orange"></div>
+            <div class="breakdown-text">
+              <strong>Repeated themes</strong>
+              <span>Similar messages appearing multiple times</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${echo.breakdown?.repeated_themes || 0}%
+          </span>
+        </div>
+        ${keyThemes ? `
+          <div class="divider"></div>
+          <div class="section-label" style="margin-bottom:10px">
+            Key Themes
+          </div>
+          <div class="key-themes">${keyThemes}</div>
+        ` : ''}
+      </div>
+
+      <!-- Print summary -->
+      <div class="print-card">
+        <div class="section-label">Printed Report Preview</div>
+        <div class="print-headline">${print.headline || ''}</div>
+        <div class="print-lines">
+          <div class="print-line">📊 ${print.line1 || ''}</div>
+          <div class="print-line">💭 ${print.line2 || ''}</div>
+          <div class="print-line">🔄 ${print.line3 || ''}</div>
+        </div>
+        <div class="print-rec">
+          <strong>Recommendation</strong>
+          ${print.recommendation || ''}
+        </div>
+      </div>`;
+  }
+
+  // Load on start
+  loadPersona('diverse');
+</script>
+</body>
+</html>

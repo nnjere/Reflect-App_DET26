@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflect</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #faf6f1;
+      --warm-white: #fff9f4;
+      --text-dark: #1a1410;
+      --text-mid: #6b5e52;
+      --text-light: #a8998a;
+      --pink: #e8a0bf;
+      --purple: #c084fc;
+      --peach: #fb923c;
+      --lavender: #a78bfa;
+      --green: #86efac;
+      --card-bg: #ffffff;
+      --border: rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    /* ── Phone shell ── */
+    .phone-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      padding: 40px 20px 80px;
+      flex-wrap: wrap;
+    }
+
+    .phone {
+      width: 340px;
+      min-height: 680px;
+      background: var(--warm-white);
+      border-radius: 48px;
+      box-shadow:
+        0 0 0 8px #1a1410,
+        0 32px 80px rgba(0,0,0,0.18);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Notch ── */
+    .notch {
+      width: 100px;
+      height: 24px;
+      background: #1a1410;
+      border-radius: 0 0 16px 16px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px 8px;
+    }
+
+    .top-bar .greeting {
+      font-size: 11px;
+      color: var(--text-mid);
+      line-height: 1.4;
+    }
+
+    .top-bar .greeting strong {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* ── Screen content ── */
+    .screen {
+      flex: 1;
+      padding: 8px 20px 20px;
+      overflow-y: auto;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .screen-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+
+    .screen-subtitle {
+      font-size: 13px;
+      color: var(--text-mid);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: var(--text-dark);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .card-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Theme bars ── */
+    .theme-row {
+      margin-bottom: 14px;
+    }
+
+    .theme-row-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .theme-row-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .theme-row-pct {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .bar-track {
+      height: 8px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 20px;
+    }
+
+    /* Gradient bars matching Figma */
+    .bar-0 { background: linear-gradient(90deg, #c084fc, #e879b0); }
+    .bar-1 { background: linear-gradient(90deg, #fb923c, #f87171); }
+    .bar-2 { background: linear-gradient(90deg, #e879b0, #fb7185); }
+    .bar-3 { background: linear-gradient(90deg, #a78bfa, #c084fc); }
+    .bar-4 { background: linear-gradient(90deg, #60a5fa, #a78bfa); }
+    .bar-5 { background: linear-gradient(90deg, #86efac, #60a5fa); }
+
+    /* ── Overall label pill ── */
+    .overall-pill {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    .pill-diverse  { background: #fce7f3; color: #be185d; }
+    .pill-siloed   { background: #fee2e2; color: #991b1b; }
+    .pill-balanced { background: #dcfce7; color: #166534; }
+    .pill-polarized{ background: #fff7ed; color: #9a3412; }
+
+    /* ── Breakdown list ── */
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f0eb;
+    }
+
+    .breakdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .breakdown-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 4px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .dot-positive { background: #22c55e; }
+    .dot-neutral  { background: #fbbf24; }
+    .dot-negative { background: #f87171; }
+    .dot-unique   { background: #22c55e; }
+    .dot-repeated { background: #fb923c; }
+
+    .breakdown-left {
+      display: flex;
+      align-items: flex-start;
+      flex: 1;
+    }
+
+    .breakdown-text strong {
+      font-size: 13px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .breakdown-text span {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    .breakdown-pct {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    /* ── Section box ── */
+    .section-box {
+      background: #faf6f1;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .section-box-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    .signal-bar {
+      height: 6px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .signal-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #86efac, #60a5fa);
+    }
+
+    .signal-fill.high {
+      background: linear-gradient(90deg, #f87171, #fb923c);
+    }
+
+    /* ── Key themes ── */
+    .themes-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .theme-tag {
+      padding: 5px 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--text-mid);
+    }
+
+    /* ── Echo signal ── */
+    .echo-signal {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+    }
+
+    .nav-label {
+      font-size: 9px;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-label.active {
+      color: #be185d;
+    }
+
+    /* ── Gradient backgrounds ── */
+    .bg-home {
+      background: linear-gradient(160deg,
+        #fdf2f8 0%, #faf6f1 50%, #fef9f0 100%);
+    }
+
+    .bg-emotion {
+      background: linear-gradient(160deg,
+        #fef9f0 0%, #faf6f1 50%, #f0f9ff 100%);
+    }
+
+    .bg-echo {
+      background: linear-gradient(160deg,
+        #faf6f1 0%, #f0fdf4 50%, #fefce8 100%);
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      text-align: center;
+      padding: 48px 20px 32px;
+    }
+
+    .page-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      background: linear-gradient(135deg, #c084fc, #e879b0, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-tagline {
+      font-size: 15px;
+      color: var(--text-mid);
+      margin-top: 8px;
+    }
+
+    /* ── Switcher ── */
+    .switcher {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      padding: 0 20px;
+    }
+
+    .switcher button {
+      padding: 10px 24px;
+      border-radius: 24px;
+      border: 1.5px solid #d4c5b8;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .switcher button.active {
+      background: var(--text-dark);
+      border-color: var(--text-dark);
+      color: white;
+    }
+
+    /* ── Loading ── */
+    .loading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      gap: 16px;
+    }
+
+    .loading-star {
+      font-size: 32px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    /* ── Back arrow ── */
+    .back-arrow {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-bottom: 16px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-logo">Reflect</div>
+    <div class="page-tagline">
+      Your media consumption, understood
+    </div>
+  </div>
+
+  <!-- Persona switcher -->
+  <div class="switcher">
+    <button class="active"
+      onclick="loadReport('diverse', this)">
+      Diverse Consumer
+    </button>
+    <button onclick="loadReport('echo_chamber', this)">
+      Echo Chamber User
+    </button>
+  </div>
+
+  <!-- Three phones side by side -->
+  <div class="phone-wrap" id="phones">
+    <div class="loading-wrap">
+      <div class="loading-star">✦</div>
+      <div class="loading-text">Analyzing media diet...</div>
+    </div>
+  </div>
+
+<script>
+async function loadReport(persona, btn) {
+  document.querySelectorAll('.switcher button')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.getElementById('phones').innerHTML = `
+    <div class="loading-wrap">
+      <div class="loading-star">✦</div>
+      <div class="loading-text">Analyzing media diet...</div>
+    </div>`;
+
+  try {
+    const res = await fetch('/analyze?persona=' + persona);
+    const data = await res.json();
+    render(data);
+  } catch(e) {
+    document.getElementById('phones').innerHTML =
+      `<div class="loading-wrap">
+        <div class="loading-text">Error: ${e}</div>
+      </div>`;
+  }
+}
+
+function render(d) {
+  const user   = d.user || {};
+  const themes = d.thematic_analysis || {};
+  const dims   = d.dimensionality_analysis || {};
+  const pol    = dims.polarity || {};
+  const emo    = dims.emotional_tone || {};
+  const echo   = dims.echo_chamber || {};
+
+  const label  = user.overall_label || 'Balanced';
+  const pillClass = {
+    'Diverse':   'pill-diverse',
+    'Balanced':  'pill-balanced',
+    'Siloed':    'pill-siloed',
+    'Polarized': 'pill-polarized'
+  }[label] || 'pill-balanced';
+
+  // Theme bars
+  const themeBars = (themes.themes || [])
+    .slice(0, 4)
+    .map((t, i) => `
+      <div class="theme-row">
+        <div class="theme-row-header">
+          <span class="theme-row-name">${t.theme}</span>
+          <span class="theme-row-pct">${t.percentage}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bar-${i}"
+               style="width:${t.percentage}%"></div>
+        </div>
+      </div>`).join('');
+
+  // Key themes pills
+  const themePills = (echo.key_themes || [])
+    .map(t => `<span class="theme-tag">${t}</span>`)
+    .join('');
+
+  // Logo SVG (star shape)
+  const logo = `
+    <svg class="logo-icon" viewBox="0 0 36 36">
+      <path d="M18 2 L20 16 L34 18 L20 20 L18 34
+               L16 20 L2 18 L16 16 Z"
+            fill="url(#lg)" opacity="0.9"/>
+      <defs>
+        <linearGradient id="lg" x1="0" y1="0"
+                        x2="1" y2="1">
+          <stop offset="0%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#e879b0"/>
+        </linearGradient>
+      </defs>
+    </svg>`;
+
+  const nav = (active) => `
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label ${active==='home'?'active':''}">
+          Home
+        </span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◎</span>
+        <span class="nav-label ${active==='eco'?'active':''}">
+          Ecosystem
+        </span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⊙</span>
+        <span class="nav-label ${active==='exp'?'active':''}">
+          Explore
+        </span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">✦</span>
+        <span class="nav-label ${active==='ref'?'active':''}">
+          Reflect
+        </span>
+      </div>
+    </div>`;
+
+  // ── Screen 1: Digital Patterns ──────────────────────
+  const screen1 = `
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="top-bar">
+        <div class="greeting">
+          Good Morning ${user.name || 'you'},<br>
+          <strong>Your media consumption</strong><br>
+          has been
+          <em style="color:#be185d">${label}</em> today
+        </div>
+        ${logo}
+      </div>
+      <div class="screen bg-home">
+        <div class="section-label">Your Overview</div>
+        <div class="screen-title">Digital Patterns</div>
+
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-value">
+              ${themes.total_videos_analyzed || 0}
+            </div>
+            <div class="stat-label">Videos</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">
+              ${(themes.themes || []).length}
+            </div>
+            <div class="stat-label">Types</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">
+              ${echo.score || 0}<span style="font-size:14px">/10</span>
+            </div>
+            <div class="stat-label">Diversity</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Content Diversity</div>
+          <div class="card-title">${themes.dominant_theme || ''}</div>
+          <span class="overall-pill ${pillClass}">${label}</span>
+          ${themeBars}
+        </div>
+
+        <div style="font-size:12px; color:var(--text-light);
+                    text-align:center; padding: 8px 0;">
+          ${themes.theme_summary || ''}
+        </div>
+      </div>
+      ${nav('home')}
+    </div>`;
+
+  // ── Screen 2: Emotional Tone ────────────────────────
+  const screen2 = `
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="top-bar">
+        <span class="back-arrow">← Back</span>
+        ${logo}
+      </div>
+      <div class="screen bg-emotion">
+        <div class="section-label">Emotional Tone</div>
+        <div class="screen-title">${emo.label || ''}</div>
+        <div class="screen-subtitle">${emo.summary || ''}</div>
+
+        <div class="card">
+          <div class="section-box-title">What this means</div>
+          <div class="breakdown-item">
+            <div class="breakdown-left">
+              <div class="breakdown-dot dot-positive"></div>
+              <div class="breakdown-text">
+                <strong>Positive content</strong>
+                <span>Uplifting, aspirational, motivational</span>
+              </div>
+            </div>
+            <span class="breakdown-pct">
+              ${emo.breakdown?.positive || 0}%
+            </span>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-left">
+              <div class="breakdown-dot dot-neutral"></div>
+              <div class="breakdown-text">
+                <strong>Neutral content</strong>
+                <span>Informational, observational</span>
+              </div>
+            </div>
+            <span class="breakdown-pct">
+              ${emo.breakdown?.neutral || 0}%
+            </span>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-left">
+              <div class="breakdown-dot dot-negative"></div>
+              <div class="breakdown-text">
+                <strong>Polarizing content</strong>
+                <span>Emotionally charged or opinion-driven</span>
+              </div>
+            </div>
+            <span class="breakdown-pct">
+              ${emo.breakdown?.polarizing || 0}%
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-box-title">
+            How this is determined
+          </div>
+          <div style="font-size:12px; color:var(--text-mid);
+                      line-height:1.8;">
+            • Language used in captions and hashtags<br>
+            • Engagement patterns (likes, shares)<br>
+            • Associated communities and creators<br>
+            • Content category and tone signals
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:var(--text-light);
+                    text-align:center; padding:8px 0 4px;">
+          ${pol.summary || ''}
+        </div>
+      </div>
+      ${nav('home')}
+    </div>`;
+
+  // ── Screen 3: Echo Chamber ──────────────────────────
+  const echoRisk = echo.score <= 3 ? 'High Risk'
+                 : echo.score <= 6 ? 'Medium Risk'
+                 : 'Low Risk';
+
+  const signalHigh = echo.signal_percentage > 50;
+
+  const screen3 = `
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="top-bar">
+        <span class="back-arrow">← Back</span>
+        ${logo}
+      </div>
+      <div class="screen bg-echo">
+        <div class="section-label">
+          Echo Chamber & Reinforcement
+        </div>
+        <div class="screen-title">${echo.label || ''}</div>
+        <div class="screen-subtitle">${echo.summary || ''}</div>
+
+        <div class="card">
+          <div class="echo-signal">
+            Echo chamber signal —
+            ${echoRisk}
+            (${echo.signal_percentage || 0}%)
+          </div>
+          <div class="signal-bar">
+            <div class="signal-fill ${signalHigh ? 'high' : ''}"
+                 style="width:${echo.signal_percentage || 0}%">
+            </div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-left">
+              <div class="breakdown-dot dot-unique"></div>
+              <div class="breakdown-text">
+                <strong>Unique sources</strong>
+                <span>
+                  Different creators, communities, perspectives
+                </span>
+              </div>
+            </div>
+            <span class="breakdown-pct">
+              ${echo.breakdown?.unique_sources || 0}%
+            </span>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-left">
+              <div class="breakdown-dot dot-repeated"></div>
+              <div class="breakdown-text">
+                <strong>Repeated themes</strong>
+                <span>
+                  Similar messages appearing multiple times
+                </span>
+              </div>
+            </div>
+            <span class="breakdown-pct">
+              ${echo.breakdown?.repeated_themes || 0}%
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-box-title">Key Themes This Week</div>
+          <div class="themes-wrap">${themePills}</div>
+        </div>
+      </div>
+      ${nav('home')}
+    </div>`;
+
+  document.getElementById('phones').innerHTML =
+    screen1 + screen2 + screen3;
+}
+
+// Load on start
+loadReport('diverse',
+  document.querySelector('.switcher button'));
+</script>
+</body>
+</html>

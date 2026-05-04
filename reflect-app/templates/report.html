@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflect</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #faf6f1;
+      --warm: #fff9f4;
+      --dark: #1a1410;
+      --mid: #6b5e52;
+      --light: #a8998a;
+      --border: rgba(0,0,0,0.07);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--warm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      text-align: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      background: linear-gradient(135deg, #c084fc, #e879b0, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      padding-left: 240px;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: white;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 97px;
+      height: calc(100vh - 97px);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-title {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-empty {
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--light);
+      line-height: 1.6;
+    }
+
+    .report-item {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .report-item:hover { background: var(--cream); }
+
+    .report-item.active {
+      background: #fce7f3;
+      border-left: 3px solid #e879b0;
+    }
+
+    .report-checkbox {
+      margin-top: 3px;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: #e879b0;
+    }
+
+    .report-item-content { flex: 1; min-width: 0; }
+
+    .report-item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .report-item-meta {
+      font-size: 10px;
+      color: var(--light);
+    }
+
+    .dummy-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      background: #ede9fe;
+      color: #7c3aed;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .real-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .blend-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      background: #fce7f3;
+      color: #be185d;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--light);
+      font-size: 12px;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Blend section in sidebar ── */
+    .sidebar-section {
+      border-top: 2px solid var(--border);
+      margin-top: auto;
+    }
+
+    .blend-bar {
+      padding: 10px 20px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--warm);
+      position: sticky;
+      bottom: 0;
+    }
+
+    .blend-count {
+      font-size: 11px;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+
+    .blend-btn {
+      width: 100%;
+      padding: 9px;
+      background: var(--dark);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .blend-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* ── Main content ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px 80px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* ── Generate panel ── */
+    .generate-panel {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .generate-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    .generate-sub {
+      font-size: 13px;
+      color: var(--mid);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .generate-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gen-btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1.5px solid #d4c5b8;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mid);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gen-btn:hover {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: white;
+    }
+
+    .gen-btn.upload-btn {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: white;
+    }
+
+    /* ── Upload box ── */
+    .upload-box {
+      border: 2px dashed #d4c5b8;
+      border-radius: 16px;
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .upload-box.visible { display: block; }
+    .upload-box:hover { border-color: #e879b0; background: #fff9fb; }
+    .upload-icon { font-size: 24px; margin-bottom: 8px; }
+
+    .upload-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--light);
+      margin-bottom: 14px;
+    }
+
+    .upload-cta {
+      display: inline-block;
+      padding: 9px 22px;
+      background: var(--dark);
+      color: white;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    #file-input { display: none; }
+
+    /* ── View tabs ── */
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      background: white;
+      padding: 4px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      width: fit-content;
+    }
+
+    .view-tab {
+      padding: 8px 18px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--light);
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .view-tab.active {
+      background: var(--dark);
+      color: white;
+    }
+
+    /* ── JSON snapshot ── */
+    .json-snapshot { display: none; }
+    .json-snapshot.visible { display: block; }
+    .reflect-report { display: none; }
+    .reflect-report.visible { display: block; }
+    .blend-view { display: none; }
+    .blend-view.visible { display: block; }
+    .receipt-view { display: none; }
+    .receipt-view.visible { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .json-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 4px;
+    }
+
+    .json-section-title {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* ── Overall pill ── */
+    .overall-pill {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-style: italic;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+
+    .pill-diverse   { background: #fce7f3; color: #be185d; }
+    .pill-balanced  { background: #dcfce7; color: #166534; }
+    .pill-siloed    { background: #fee2e2; color: #991b1b; }
+    .pill-polarized { background: #fff7ed; color: #9a3412; }
+
+    /* ── Scores ── */
+    .score-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .score-box {
+      flex: 1;
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .score-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .score-val.good { color: #16a34a; }
+    .score-val.mid  { color: #d97706; }
+    .score-val.bad  { color: #dc2626; }
+
+    .score-name {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-top: 3px;
+    }
+
+    /* ── JSON stats ── */
+    .json-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .json-stat {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .json-stat-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .json-stat-label {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-top: 3px;
+    }
+
+    /* ── Theme bars ── */
+    .theme-row { margin-bottom: 14px; }
+
+    .theme-row-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .theme-name { font-size: 14px; font-weight: 500; }
+    .theme-meta { font-size: 12px; color: var(--light); }
+    .theme-pct  { font-size: 14px; font-weight: 600; }
+
+    .bar-track {
+      height: 8px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .bar-fill { height: 100%; border-radius: 20px; }
+    .bar-0 { background: linear-gradient(90deg, #c084fc, #e879b0); }
+    .bar-1 { background: linear-gradient(90deg, #fb923c, #f87171); }
+    .bar-2 { background: linear-gradient(90deg, #e879b0, #fb7185); }
+    .bar-3 { background: linear-gradient(90deg, #a78bfa, #c084fc); }
+    .bar-4 { background: linear-gradient(90deg, #60a5fa, #a78bfa); }
+    .bar-5 { background: linear-gradient(90deg, #86efac, #60a5fa); }
+
+    .evidence-text {
+      font-size: 11px;
+      color: var(--light);
+      font-style: italic;
+      margin-top: 3px;
+    }
+
+    /* ── Breakdown ── */
+    .breakdown-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 11px 0;
+      border-bottom: 1px solid #f5f0eb;
+    }
+
+    .breakdown-item:last-child { border-bottom: none; }
+
+    .breakdown-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .dot-green  { background: #22c55e; }
+    .dot-yellow { background: #fbbf24; }
+    .dot-red    { background: #f87171; }
+    .dot-blue   { background: #60a5fa; }
+    .dot-orange { background: #fb923c; }
+
+    .breakdown-text strong {
+      font-size: 14px;
+      font-weight: 600;
+      display: block;
+    }
+
+    .breakdown-text span {
+      font-size: 12px;
+      color: var(--light);
+    }
+
+    .breakdown-pct { font-size: 14px; font-weight: 600; }
+
+    /* ── Signal bar ── */
+    .signal-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+
+    .signal-track {
+      height: 6px;
+      background: #f0ebe4;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .signal-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #86efac, #60a5fa);
+    }
+
+    .signal-fill.high {
+      background: linear-gradient(90deg, #f87171, #fb923c);
+    }
+
+    /* ── Key themes ── */
+    .key-themes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .theme-tag {
+      padding: 5px 12px;
+      background: var(--cream);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      padding: 4px 11px;
+      background: var(--cream);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    .tag.collection {
+      background: linear-gradient(135deg, #fce7f3, #ede9fe);
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    /* ── Print card ── */
+    .print-card {
+      background: var(--dark);
+      color: white;
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .print-card .section-label { color: #666; }
+
+    .print-headline {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      color: white;
+      margin-bottom: 18px;
+    }
+
+    .print-lines { border-top: 1px solid #333; padding-top: 14px; }
+
+    .print-line {
+      padding: 9px 0;
+      border-bottom: 1px solid #2a2a2a;
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.5;
+    }
+
+    .print-rec {
+      margin-top: 14px;
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 12px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    .print-rec strong {
+      color: white;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── Bubble visualization ── */
+    .bubble-wrap {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      position: relative;
+    }
+
+    /* ── Member comparison cards ── */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .comparison-card {
+      background: var(--cream);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .comparison-names {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--dark);
+    }
+
+    .overlap-bar-track {
+      height: 6px;
+      background: #e8e0d8;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .overlap-bar-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #c084fc, #e879b0);
+    }
+
+    .overlap-score {
+      font-size: 11px;
+      color: var(--light);
+    }
+
+    .comparison-diff {
+      font-size: 11px;
+      color: var(--mid);
+      margin-top: 6px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    /* ── Diverging themes ── */
+    .diverging-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .diverging-item:last-child { border-bottom: none; }
+
+    .diverging-theme {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .diverging-meta {
+      font-size: 12px;
+      color: var(--mid);
+      margin-bottom: 3px;
+    }
+
+    .diverging-desc {
+      font-size: 11px;
+      color: var(--light);
+      font-style: italic;
+    }
+
+    /* ── Loading / welcome ── */
+    .loading {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .loading-star {
+      font-size: 32px;
+      animation: spin 2s linear infinite;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text { font-size: 14px; color: var(--light); }
+
+    .welcome {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .welcome-star {
+      font-size: 48px;
+      background: linear-gradient(135deg, #c084fc, #e879b0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .welcome-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-sub {
+      font-size: 15px;
+      color: var(--mid);
+      max-width: 400px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Member colors ── */
+    .member-colors {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .member-color-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+    }
+
+    .member-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">Reflect</div>
+  </div>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+      <!-- Reports section -->
+      <div class="sidebar-header">
+        <div class="sidebar-title">Saved Reports</div>
+        <div style="display:flex;justify-content:space-between;
+                    align-items:center;">
+          <div style="font-size:12px;color:var(--mid)"
+               id="report-count">0 reports</div>
+          <button onclick="clearAllReports()" style="
+            font-size:11px; color:var(--light); background:none;
+            border:none; cursor:pointer;
+            font-family:'DM Sans',sans-serif; padding:2px 0;">
+            Clear all
+          </button>
+        </div>
+      </div>
+
+      <div id="sidebar-list"></div>
+
+      <!-- Blends section -->
+      <div class="sidebar-section">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Blended Reports</div>
+          <div style="font-size:12px;color:var(--mid)"
+               id="blend-count">0 blends</div>
+        </div>
+        <div id="blend-list">
+          <div class="sidebar-empty">
+            Select 2–6 reports to blend
+          </div>
+        </div>
+      </div>
+
+      <!-- Blend action bar -->
+      <div class="blend-bar">
+        <div class="blend-count" id="blend-selection-count">
+          Select reports to blend
+        </div>
+        <button class="blend-btn" id="blend-btn"
+                onclick="runBlend()" disabled>
+          ✦ Blend Selected
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+      <!-- Generate panel -->
+      <div class="generate-panel">
+        <div class="generate-title">Generate a Report</div>
+        <div class="generate-sub">
+          Upload your TikTok data or generate a sample report.
+        </div>
+        <div class="generate-options">
+          <button class="gen-btn upload-btn"
+            onclick="showUpload()">
+            ↑ Upload Your Data
+          </button>
+          <div style="position:relative;display:inline-block">
+            <button class="gen-btn"
+                    onclick="toggleSampleMenu()">
+              ✦ Sample Report ▾
+            </button>
+            <div id="sample-menu" style="
+              display:none; position:absolute;
+              top:calc(100% + 8px); left:0;
+              background:white; border:1px solid var(--border);
+              border-radius:16px;
+              box-shadow:0 8px 24px rgba(0,0,0,0.1);
+              min-width:220px; z-index:200; overflow:hidden;">
+              <div onclick="selectSample('marcus')"
+                   class="sample-option">
+                <div style="font-weight:600">Marcus</div>
+                <div style="font-size:11px;color:var(--light);
+                            margin-top:2px">
+                  Radicalized pipeline user
+                </div>
+              </div>
+              <div onclick="selectSample('emma')"
+                   class="sample-option">
+                <div style="font-weight:600">Emma</div>
+                <div style="font-size:11px;color:var(--light);
+                            margin-top:2px">
+                  TradWife aesthetic consumer
+                </div>
+              </div>
+              <div onclick="selectSample('kai')"
+                   class="sample-option">
+                <div style="font-weight:600">Kai</div>
+                <div style="font-size:11px;color:var(--light);
+                            margin-top:2px">
+                  Culture nerd & digital hobbyist
+                </div>
+              </div>
+              <div onclick="selectSample('zoe')"
+                   class="sample-option"
+                   style="border-bottom:none">
+                <div style="font-weight:600">Zoe</div>
+                <div style="font-size:11px;color:var(--light);
+                            margin-top:2px">
+                  Conscious intentional consumer
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-box" id="upload-box"
+             onclick="document.getElementById('file-input').click()">
+          <div class="upload-icon">✦</div>
+          <div class="upload-title">Upload your TikTok JSON</div>
+          <div class="upload-sub">
+            Click to select your downloaded TikTok data file
+          </div>
+          <button class="upload-cta">Choose file</button>
+          <input type="file" id="file-input" accept=".json"
+                 onchange="handleUpload(this)">
+        </div>
+      </div>
+
+      <!-- Report display -->
+      <div id="report-display">
+        <div class="welcome">
+          <span class="welcome-star">✦</span>
+          <div class="welcome-title">Your media, reflected</div>
+          <div class="welcome-sub">
+            Generate a report above or select saved reports
+            from the sidebar to blend them together.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .sample-option {
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--dark);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .sample-option:hover { background: var(--cream); }
+  </style>
+
+<script>
+  // ── Member colors for bubbles ──────────────────────
+  const MEMBER_COLORS = [
+    '#c084fc', '#e879b0', '#fb923c',
+    '#60a5fa', '#34d399', '#fbbf24'
+  ];
+
+  // ── State ──────────────────────────────────────────
+  let reports = JSON.parse(
+    localStorage.getItem('reflect_reports') || '[]');
+  let blends = JSON.parse(
+    localStorage.getItem('reflect_blends') || '[]');
+  let activeId = null;
+  let activeIsBlend = false;
+  let activeView = 'reflect';
+  let selectedIds = new Set();
+
+  // ── Init ───────────────────────────────────────────
+  renderSidebar();
+  if (reports.length > 0) {
+    loadReport(reports[reports.length - 1].id, false);
+  }
+
+  // ── Upload / sample menu ───────────────────────────
+  function showUpload() {
+    document.getElementById('upload-box')
+      .classList.toggle('visible');
+    document.getElementById('sample-menu').style.display = 'none';
+  }
+
+  function toggleSampleMenu() {
+    const menu = document.getElementById('sample-menu');
+    menu.style.display =
+      menu.style.display === 'none' ? 'block' : 'none';
+    document.getElementById('upload-box')
+      .classList.remove('visible');
+  }
+
+  function selectSample(persona) {
+    document.getElementById('sample-menu').style.display = 'none';
+    generateDummy(persona);
+  }
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('sample-menu');
+    if (!e.target.closest('#sample-menu') &&
+        !e.target.closest(
+          'button[onclick="toggleSampleMenu()"]')) {
+      if (menu) menu.style.display = 'none';
+    }
+  });
+
+  // ── Generate dummy ─────────────────────────────────
+  async function generateDummy(persona) {
+    setLoading('Analyzing media diet...');
+    document.getElementById('upload-box')
+      .classList.remove('visible');
+    try {
+      const res = await fetch(`/dummy?persona=${persona}`);
+      const data = await res.json();
+      if (data.error) { setError(data.error); return; }
+      saveAndRender(data);
+    } catch(e) { setError(e.toString()); }
+  }
+
+  // ── Handle upload ──────────────────────────────────
+  async function handleUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    setLoading('Reading your TikTok data...<br><span style="font-size:12px;color:#bbb;margin-top:8px;display:block">This may take 20-30 seconds</span>');
+    document.getElementById('upload-box')
+      .classList.remove('visible');
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/upload-json', {
+        method: 'POST', body: formData
+      });
+      const data = await res.json();
+      if (data.error) { setError(data.error); return; }
+      saveAndRender(data);
+    } catch(e) { setError(e.toString()); }
+    input.value = '';
+  }
+
+  // ── Save report ────────────────────────────────────
+  function saveAndRender(data) {
+    const id = Date.now().toString();
+    const report = {
+      id, report_id: data.report_id,
+      is_dummy: data.is_dummy,
+      timestamp: new Date().toLocaleString(),
+      data_summary: data.data_summary,
+      analysis: data.analysis
+    };
+    reports.push(report);
+    localStorage.setItem('reflect_reports',
+      JSON.stringify(reports));
+    renderSidebar();
+    loadReport(id, false);
+  }
+
+  // ── Load report ────────────────────────────────────
+  function loadReport(id, isBlend) {
+    activeId = id;
+    activeIsBlend = isBlend;
+    activeView = isBlend ? 'blend' : 'reflect';
+    renderSidebar();
+
+    if (isBlend) {
+      const blend = blends.find(b => b.id === id);
+      if (blend) renderBlendDisplay(blend);
+    } else {
+      const report = reports.find(r => r.id === id);
+      if (report) renderReportDisplay(report);
+    }
+  }
+
+  // ── Toggle selection for blending ─────────────────
+  function toggleSelect(e, id) {
+    e.stopPropagation();
+    if (selectedIds.has(id)) {
+      selectedIds.delete(id);
+    } else {
+      if (selectedIds.size >= 6) {
+        alert('Maximum 6 reports per blend');
+        e.target.checked = false;
+        return;
+      }
+      selectedIds.add(id);
+    }
+    updateBlendButton();
+    renderSidebar();
+  }
+
+  function updateBlendButton() {
+    const btn = document.getElementById('blend-btn');
+    const countEl = document.getElementById(
+      'blend-selection-count');
+    const n = selectedIds.size;
+    btn.disabled = n < 2;
+    countEl.textContent = n === 0
+      ? 'Select reports to blend'
+      : n === 1
+        ? '1 selected — pick 1 more'
+        : `${n} selected — ready to blend`;
+  }
+
+  // ── Run blend ──────────────────────────────────────
+  async function runBlend() {
+    if (selectedIds.size < 2) return;
+    const selectedReports = reports.filter(
+      r => selectedIds.has(r.id));
+    setLoading(
+      `Blending ${selectedIds.size} reports...`);
+
+    try {
+      const res = await fetch('/blend', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({reports: selectedReports})
+      });
+      const data = await res.json();
+      if (data.error) { setError(data.error); return; }
+
+      const id = Date.now().toString();
+      const blend = {
+        id,
+        blend_id: data.blend_id,
+        members: data.members,
+        timestamp: new Date().toLocaleString(),
+        blend_analysis: data.blend_analysis
+      };
+
+      blends.push(blend);
+      localStorage.setItem('reflect_blends',
+        JSON.stringify(blends));
+
+      selectedIds.clear();
+      updateBlendButton();
+      renderSidebar();
+      loadReport(id, true);
+    } catch(e) { setError(e.toString()); }
+  }
+
+  // ── Render sidebar ─────────────────────────────────
+  function renderSidebar() {
+    const list = document.getElementById('sidebar-list');
+    const count = document.getElementById('report-count');
+    const blendList = document.getElementById('blend-list');
+    const blendCount = document.getElementById('blend-count');
+
+    count.textContent =
+      `${reports.length} report${reports.length !== 1 ? 's' : ''}`;
+
+    if (reports.length === 0) {
+      list.innerHTML = `<div class="sidebar-empty">
+        No reports yet</div>`;
+    } else {
+      list.innerHTML = [...reports].reverse().map(r => `
+        <div class="report-item
+             ${r.id === activeId && !activeIsBlend ? 'active' : ''}"
+             onclick="loadReport('${r.id}', false)">
+          <input type="checkbox" class="report-checkbox"
+            ${selectedIds.has(r.id) ? 'checked' : ''}
+            onclick="toggleSelect(event, '${r.id}')">
+          <div class="report-item-content">
+            <div class="report-item-name">
+              ${r.report_id}
+              ${r.is_dummy
+                ? '<span class="dummy-badge">Dummy</span>'
+                : '<span class="real-badge">Real</span>'}
+            </div>
+            <div class="report-item-meta">${r.timestamp}</div>
+          </div>
+          <button class="delete-btn"
+            onclick="deleteReport(event,'${r.id}')">✕</button>
+        </div>`).join('');
+    }
+
+    blendCount.textContent =
+      `${blends.length} blend${blends.length !== 1 ? 's' : ''}`;
+
+    if (blends.length === 0) {
+      blendList.innerHTML = `<div class="sidebar-empty">
+        Select 2–6 reports to blend</div>`;
+    } else {
+      blendList.innerHTML = [...blends].reverse().map(b => `
+        <div class="report-item
+             ${b.id === activeId && activeIsBlend ? 'active' : ''}"
+             onclick="loadReport('${b.id}', true)">
+          <div class="report-item-content">
+            <div class="report-item-name">
+              ${b.members.slice(0,2).join(' + ')}
+              ${b.members.length > 2
+                ? `+${b.members.length - 2}`  : ''}
+              <span class="blend-badge">Blend</span>
+            </div>
+            <div class="report-item-meta">${b.timestamp}</div>
+          </div>
+          <button class="delete-btn"
+            onclick="deleteBlend(event,'${b.id}')">✕</button>
+        </div>`).join('');
+    }
+  }
+
+  // ── Delete report/blend ────────────────────────────
+  function deleteReport(event, id) {
+    event.stopPropagation();
+    reports = reports.filter(r => r.id !== id);
+    selectedIds.delete(id);
+    localStorage.setItem('reflect_reports',
+      JSON.stringify(reports));
+    updateBlendButton();
+    if (activeId === id) {
+      activeId = null;
+      showWelcome();
+    }
+    renderSidebar();
+  }
+
+  function deleteBlend(event, id) {
+    event.stopPropagation();
+    blends = blends.filter(b => b.id !== id);
+    localStorage.setItem('reflect_blends',
+      JSON.stringify(blends));
+    if (activeId === id) {
+      activeId = null;
+      showWelcome();
+    }
+    renderSidebar();
+  }
+
+  function clearAllReports() {
+    if (!confirm('Clear all saved reports and blends?')) return;
+    reports = []; blends = [];
+    activeId = null; selectedIds.clear();
+    localStorage.removeItem('reflect_reports');
+    localStorage.removeItem('reflect_blends');
+    updateBlendButton();
+    renderSidebar();
+    showWelcome();
+  }
+
+  // ── Switch view tab ────────────────────────────────
+  function switchView(view) {
+    activeView = view;
+    document.querySelectorAll('.view-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.view === view);
+    });
+    document.querySelector('.json-snapshot')?.classList
+      .toggle('visible', view === 'json');
+    document.querySelector('.reflect-report')?.classList
+      .toggle('visible', view === 'reflect');
+    document.querySelector('.blend-view')?.classList
+      .toggle('visible', view === 'blend');
+    document.querySelector('.receipt-view')?.classList
+      .toggle('visible', view === 'receipt');
+  }
+
+  async function loadReceiptPreview(type) {
+    const targetId = type === 'blend'
+      ? 'receipt-content-blend'
+      : 'receipt-content-individual';
+
+    const el = document.getElementById(targetId);
+    if (!el) return;
+
+    el.textContent = 'Fetching receipt...';
+
+    try {
+      if (type === 'blend') {
+        const currentBlend = blends.find(b => b.id === activeId);
+        if (!currentBlend) { el.textContent = 'No blend found.'; return; }
+
+        const memberNames = currentBlend.members || [];
+        const memberReports = reports.filter(r =>
+          memberNames.includes(r.report_id) ||
+          memberNames.includes(r.report_id.replace('_Dummy', ''))
+        );
+
+        if (memberReports.length < 2) {
+          el.textContent = 'Could not find original reports for this blend.';
+          return;
+        }
+
+        const res = await fetch('/receipt/blend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reports: memberReports })
+        });
+        el.textContent = await res.text();
+
+      } else {
+        const report = reports.find(r => r.id === activeId);
+        if (!report) { el.textContent = 'No report found.'; return; }
+
+        const res = await fetch('/receipt/individual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ report: report })
+      });
+      el.textContent = await res.text();
+      }
+
+    } catch(e) {
+      el.textContent = 'Error: ' + e.toString();
+    }
+  }
+
+  // ── Loading / error / welcome ──────────────────────
+  function setLoading(msg) {
+    document.getElementById('report-display').innerHTML = `
+      <div class="loading">
+        <span class="loading-star">✦</span>
+        <div class="loading-text">${msg}</div>
+      </div>`;
+  }
+
+  function setError(msg) {
+    document.getElementById('report-display').innerHTML = `
+      <div class="loading">
+        <div class="loading-text" style="color:#f87171">
+          Error: ${msg}
+        </div>
+      </div>`;
+  }
+
+  function showWelcome() {
+    document.getElementById('report-display').innerHTML = `
+      <div class="welcome">
+        <span class="welcome-star">✦</span>
+        <div class="welcome-title">Your media, reflected</div>
+        <div class="welcome-sub">
+          Generate a report above or select saved reports
+          from the sidebar to blend them together.
+        </div>
+      </div>`;
+  }
+
+ // ── Render blend display ───────────────────────────
+  function renderBlendDisplay(blend) {
+    const ba = blend.blend_analysis || {};
+    const members = blend.members || [];
+    const div = ba.group_diversity || {};
+    const cp = ba.closest_pair || {};
+    const fp = ba.furthest_pair || {};
+    const emo = ba.group_emotional_tone || {};
+    const echo = ba.group_echo_chamber || {};
+    const print = ba.print_summary || {};
+
+    const svgSize = 260;
+    const cx = svgSize / 2;
+    const cy = svgSize / 2;
+    const baseR = Math.min(60, 120 / members.length);
+    const angles = members.map((_, i) =>
+      (i / members.length) * 2 * Math.PI - Math.PI / 2);
+    const spread = members.length <= 2 ? 55 : 70;
+
+    const bubbles = members.map((name, i) => {
+      const angle = angles[i];
+      const x = members.length === 1 ? cx : cx + spread * Math.cos(angle);
+      const y = members.length === 1 ? cy : cy + spread * Math.sin(angle);
+      const comparisons = ba.member_comparisons || [];
+      const relatedComp = comparisons.find(c =>
+        c.member_a === name || c.member_b === name);
+      const overlapScore = relatedComp ? relatedComp.overlap_score : 50;
+      const r = baseR * (0.7 + (overlapScore / 100) * 0.6);
+      return { name, x, y, r, color: MEMBER_COLORS[i % MEMBER_COLORS.length] };
+    });
+
+    const bubblesHTML = bubbles.map(b => `
+      <circle cx="${b.x}" cy="${b.y}" r="${b.r}"
+              fill="${b.color}" opacity="0.45"/>
+      <text x="${b.x}" y="${b.y + 4}"
+            text-anchor="middle"
+            font-family="DM Sans, sans-serif"
+            font-size="10" font-weight="600"
+            fill="#1a1410">
+        ${b.name.replace('_Dummy', '')}
+      </text>`).join('');
+
+    const legendHTML = members.map((name, i) => `
+      <div class="member-color-pill">
+        <div class="member-dot"
+             style="background:${MEMBER_COLORS[i]}"></div>
+        ${name.replace('_Dummy', '')}
+      </div>`).join('');
+
+    const sharedHTML = (ba.shared_themes || []).slice(0, 4).map(t => `
+      <div class="theme-row">
+        <div class="theme-row-top">
+          <span class="theme-name">${t.theme}</span>
+          <span class="theme-pct">${t.percentage}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bar-0" style="width:${t.percentage}%"></div>
+        </div>
+        <div class="evidence-text">${t.description || ''}</div>
+      </div>`).join('');
+
+    const divergingHTML = (ba.diverging_themes || []).slice(0, 3).map(t => `
+      <div class="diverging-item">
+        <div class="diverging-theme">${t.theme}</div>
+        <div class="diverging-meta">
+          Engages: ${(t.members_who_engage || []).join(', ')} ·
+          Doesn't: ${(t.members_who_dont || []).join(', ')}
+        </div>
+        <div class="diverging-desc">${t.description || ''}</div>
+      </div>`).join('');
+
+    const compHTML = (ba.member_comparisons || []).slice(0, 4).map(c => `
+      <div class="comparison-card">
+        <div class="comparison-names">${c.member_a} × ${c.member_b}</div>
+        <div class="overlap-bar-track">
+          <div class="overlap-bar-fill"
+               style="width:${c.overlap_score || 0}%"></div>
+        </div>
+        <div class="overlap-score">${c.overlap_score || 0}% overlap</div>
+        <div class="comparison-diff">${c.key_difference || ''}</div>
+      </div>`).join('');
+
+    const keyThemesHTML = (ba.key_common_themes || [])
+      .map(t => `<span class="theme-tag">${t}</span>`).join('');
+
+    document.getElementById('report-display').innerHTML = `
+      <div class="view-tabs">
+        <button class="view-tab ${activeView === 'blend' ? 'active' : ''}"
+          data-view="blend" onclick="switchView('blend')">
+          Blend Report
+        </button>
+        <button class="view-tab ${activeView === 'receipt' ? 'active' : ''}"
+          data-view="receipt"
+          onclick="switchView('receipt');loadReceiptPreview('blend')">
+          Receipt
+        </button>
+      </div>
+
+      <div class="blend-view ${activeView === 'blend' ? 'visible' : ''}">
+
+        <div class="card">
+          <div class="section-label">Group Blend</div>
+          <div class="card-title">${ba.blend_title || 'Group Report'}</div>
+          <div style="font-size:13px;color:var(--mid);margin-bottom:16px">
+            ${ba.group_size || members.length} people in this group
+          </div>
+          <div class="member-colors">${legendHTML}</div>
+          <div class="bubble-wrap">
+            <svg width="${svgSize}" height="${svgSize}"
+                 viewBox="0 0 ${svgSize} ${svgSize}">
+              ${bubblesHTML}
+            </svg>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <span class="overall-pill pill-diverse">${div.label || 'Mixed'}</span>
+          </div>
+          <div style="font-size:13px;color:var(--mid);margin-top:8px;line-height:1.5">
+            ${div.summary || ''}
+          </div>
+          ${cp.members ? `
+          <div style="font-size:13px;color:var(--dark);margin-top:12px">
+            You align most with <strong>${cp.members.join(' & ')}</strong>
+          </div>` : ''}
+          ${fp.members ? `
+          <div style="font-size:13px;color:var(--mid);margin-top:4px">
+            Most divergent: <strong>${fp.members.join(' & ')}</strong>
+          </div>` : ''}
+        </div>
+
+        ${compHTML ? `
+        <div class="card">
+          <div class="section-label">Member Comparisons</div>
+          <div class="card-title">Overlap Scores</div>
+          <div class="card-sub">How much each pair's media diet overlaps</div>
+          <div class="comparison-grid">${compHTML}</div>
+        </div>` : ''}
+
+        ${sharedHTML ? `
+        <div class="card">
+          <div class="section-label">Common Ground</div>
+          <div class="card-title">Shared Themes</div>
+          <div class="card-sub">Content themes present across multiple members</div>
+          ${sharedHTML}
+          ${keyThemesHTML ? `
+          <div class="divider"></div>
+          <div class="section-label" style="margin-bottom:10px">Key Common Themes</div>
+          <div class="key-themes">${keyThemesHTML}</div>` : ''}
+        </div>` : ''}
+
+        ${divergingHTML ? `
+        <div class="card">
+          <div class="section-label">Where You Differ</div>
+          <div class="card-title">Diverging Themes</div>
+          <div class="card-sub">Content that divides the group</div>
+          ${divergingHTML}
+        </div>` : ''}
+
+        <div class="card">
+          <div class="section-label">Group Dimensions</div>
+          <div class="card-title">Collective Scores</div>
+          <div class="score-row">
+            <div class="score-box">
+              <div class="score-val">${emo.average_score || '—'}/10</div>
+              <div class="score-name">Emotional Tone</div>
+            </div>
+            <div class="score-box">
+              <div class="score-val">${echo.average_score || '—'}/10</div>
+              <div class="score-name">Diversity</div>
+            </div>
+            <div class="score-box">
+              <div class="score-val">${div.score || '—'}/10</div>
+              <div class="score-name">Group Diversity</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--mid);margin-bottom:8px;line-height:1.5">
+            ${emo.summary || ''}
+          </div>
+          <div style="font-size:13px;color:var(--mid);line-height:1.5">
+            ${echo.summary || ''}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">How This Is Determined</div>
+          <div class="card-title">Group Summary</div>
+          <div class="card-sub">${ba.group_summary || ''}</div>
+          <div style="font-size:13px;color:var(--mid);line-height:1.8">
+            • Number of common hashtags, communities, and themes identified<br>
+            • Topic overlap and message similarity across members<br>
+            • Community clustering and interconnected networks<br>
+            • Frequency of reinforcing vs contrasting viewpoints
+          </div>
+        </div>
+
+        <div class="print-card">
+          <div class="section-label">Printed Report Preview</div>
+          <div class="print-headline">${print.headline || ''}</div>
+          <div class="print-lines">
+            <div class="print-line">📊 ${print.line1 || ''}</div>
+            <div class="print-line">💭 ${print.line2 || ''}</div>
+            <div class="print-line">🔄 ${print.line3 || ''}</div>
+          </div>
+          <div class="print-rec">
+            <strong>Group Recommendation</strong>
+            ${print.recommendation || ''}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="receipt-view ${activeView === 'receipt' ? 'visible' : ''}">
+        <div style="
+          background: #f5f0e8;
+          border-radius: 20px;
+          padding: 28px;
+          font-family: 'Courier New', monospace;
+          color: #1a1410;
+          white-space: pre-wrap;
+          font-size: 13px;
+          line-height: 1.6;
+          letter-spacing: 0.3px;
+          border: 1px solid var(--border);
+        ">
+          <div style="
+            text-align:center;
+            margin-bottom:16px;
+            font-size:11px;
+            color:#a8998a;
+            letter-spacing:2px;
+            text-transform:uppercase;
+          ">Receipt Preview — MC206H Format</div>
+          <div id="receipt-content-blend"
+               style="min-height:200px;text-align:center;
+                      color:#666;padding:40px 0">
+            Loading receipt...
+          </div>
+        </div>
+      </div>`;
+
+    if (activeView === 'receipt') {
+      loadReceiptPreview('blend');
+    }
+  }
+
+  // ── Render individual report display ───────────────
+  function renderReportDisplay(report) {
+    const d = report.analysis;
+    const summary = report.data_summary;
+    const user   = d.user || {};
+    const themes = d.thematic_analysis || {};
+    const dims   = d.dimensionality_analysis || {};
+    const pol    = dims.polarity || {};
+    const emo    = dims.emotional_tone || {};
+    const echo   = dims.echo_chamber || {};
+    const print  = d.print_summary || {};
+
+    const label = user.overall_label || 'Balanced';
+    const pillClass = {
+      'Diverse':   'pill-diverse',
+      'Balanced':  'pill-balanced',
+      'Siloed':    'pill-siloed',
+      'Polarized': 'pill-polarized'
+    }[label] || 'pill-balanced';
+
+    function sc(s, inv) {
+      const v = inv ? 11 - s : s;
+      return v >= 7 ? 'good' : v >= 4 ? 'mid' : 'bad';
+    }
+
+    // JSON snapshot
+    const peakLabel = {
+      'early_morning': 'Early Morning (5–8am)',
+      'morning': 'Morning (8am–12pm)',
+      'afternoon': 'Afternoon (12–5pm)',
+      'evening': 'Evening (5–9pm)',
+      'late_night': 'Late Night (9pm+)'
+    }[summary?.peak_hours] || summary?.peak_hours || '—';
+
+    const patternBars = Object.entries(
+      summary?.watch_pattern || {})
+      .map(([period, pct], i) => {
+        const labels = {
+          early_morning: '5–8am', morning: '8am–12pm',
+          afternoon: '12–5pm', evening: '5–9pm',
+          late_night: '9pm+'
+        };
+        return `
+          <div class="theme-row" style="margin-bottom:10px">
+            <div class="theme-row-top">
+              <span class="theme-name" style="font-size:13px">
+                ${labels[period] || period}
+              </span>
+              <span class="theme-pct" style="font-size:13px">
+                ${pct}%
+              </span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-${i}"
+                   style="width:${pct}%"></div>
+            </div>
+          </div>`;
+      }).join('');
+
+    const searches = (summary?.top_searches || [])
+      .map(s => `<span class="tag">${s}</span>`).join('');
+    const cols = (summary?.collections || [])
+      .map(c => `<span class="tag collection">${c}</span>`)
+      .join('');
+    const devices = (summary?.devices || [])
+      .map(d => `<span class="tag">${d}</span>`).join('');
+
+    const jsonHTML = `
+      <div class="json-card">
+        <div class="json-section-title">Activity Overview</div>
+        <div class="json-stat-grid">
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.watch_count || 0}
+            </div>
+            <div class="json-stat-label">Watched</div>
+          </div>
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.like_count || 0}
+            </div>
+            <div class="json-stat-label">Liked</div>
+          </div>
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.saved_count || 0}
+            </div>
+            <div class="json-stat-label">Saved</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="json-card">
+        <div class="json-section-title">Engagement Rates</div>
+        <div class="json-stat-grid">
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.like_rate || 0}%
+            </div>
+            <div class="json-stat-label">Like Rate</div>
+          </div>
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.save_rate || 0}%
+            </div>
+            <div class="json-stat-label">Save Rate</div>
+          </div>
+          <div class="json-stat">
+            <div class="json-stat-val">
+              ${summary?.avg_session_videos || 0}
+            </div>
+            <div class="json-stat-label">Videos/Session</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--light);
+                    margin-top:8px">
+          ${summary?.num_sessions || 0} sessions detected · 
+          Peak usage: ${peakLabel}
+        </div>
+      </div>
+
+      ${Object.keys(summary?.watch_pattern || {}).length ? `
+      <div class="json-card">
+        <div class="json-section-title"
+             style="margin-bottom:14px">
+          Watch Time by Time of Day
+        </div>
+        ${patternBars}
+      </div>` : ''}
+
+      ${summary?.region || devices ? `
+      <div class="json-card">
+        <div class="json-section-title">Device & Region</div>
+        <div style="font-size:14px;color:var(--mid);
+                    margin-bottom:${devices ? '12px' : '0'}">
+          Region: ${summary?.region || 'Unknown'}
+        </div>
+        ${devices
+          ? `<div class="tag-cloud">${devices}</div>` : ''}
+      </div>` : ''}
+
+      ${cols ? `
+      <div class="json-card">
+        <div class="json-section-title"
+             style="margin-bottom:10px">
+          Curated Collections
+        </div>
+        <div class="tag-cloud">${cols}</div>
+      </div>` : ''}
+
+      ${searches ? `
+      <div class="json-card">
+        <div class="json-section-title"
+             style="margin-bottom:10px">
+          Search History Sample
+        </div>
+        <div class="tag-cloud">${searches}</div>
+      </div>` : ''}`;
+
+    // Theme bars
+    const themeBars = (themes.themes || []).slice(0, 5)
+      .map((t, i) => `
+        <div class="theme-row">
+          <div class="theme-row-top">
+            <div>
+              <span class="theme-name">${t.theme}</span>
+              <span class="theme-meta">
+                · ${t.consumption_type || ''}
+                · ${t.engagement_level || ''}
+              </span>
+            </div>
+            <span class="theme-pct">${t.percentage}%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bar-${i}"
+                 style="width:${t.percentage}%"></div>
+          </div>
+          ${t.evidence
+            ? `<div class="evidence-text">
+                 ${t.evidence}</div>` : ''}
+        </div>`).join('');
+
+    const keyThemes = (echo.key_themes || [])
+      .map(t => `<span class="theme-tag">${t}</span>`)
+      .join('');
+    const signalHigh = (echo.signal_percentage || 0) > 50;
+
+    const reflectHTML = `
+      <div class="card">
+        <div class="section-label">Your Overview</div>
+        <div class="card-title">Digital Patterns</div>
+        <span class="overall-pill ${pillClass}">${label}</span>
+        <div class="card-sub">${user.overall_summary || ''}</div>
+        <div class="score-row">
+          <div class="score-box">
+            <div class="score-val ${sc(pol.score||5,false)}">
+              ${pol.score || '—'}/10
+            </div>
+            <div class="score-name">Polarity</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val ${sc(emo.score||5,false)}">
+              ${emo.score || '—'}/10
+            </div>
+            <div class="score-name">Emotional Tone</div>
+          </div>
+          <div class="score-box">
+            <div class="score-val ${sc(echo.score||5,false)}">
+              ${echo.score || '—'}/10
+            </div>
+            <div class="score-name">Diversity</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Thematic Analysis</div>
+        <div class="card-title">
+          ${themes.dominant_theme || 'Content'} Dominant
+        </div>
+        <div class="card-sub">
+          ${themes.theme_summary || ''}
+        </div>
+        ${themeBars}
+        <div class="divider"></div>
+        <div style="font-size:12px;color:var(--light)">
+          Based on ${themes.total_videos_analyzed || 0} videos
+          ${themes.total_searches
+            ? `· ${themes.total_searches} searches` : ''}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Emotional Tone</div>
+        <div class="card-title">${emo.label || ''}</div>
+        <div class="card-sub">${emo.summary || ''}</div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Positive content</strong>
+              <span>Uplifting, aspirational, motivational</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.positive || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-yellow"></div>
+            <div class="breakdown-text">
+              <strong>Neutral content</strong>
+              <span>Informational, observational</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.neutral || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-red"></div>
+            <div class="breakdown-text">
+              <strong>Polarizing content</strong>
+              <span>Emotionally charged or opinion-driven</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${emo.breakdown?.polarizing || 0}%
+          </span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">Content Polarity</div>
+        <div class="card-title">${pol.label || ''}</div>
+        <div class="card-sub">${pol.summary || ''}</div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Neutral</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.neutral || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-blue"></div>
+            <div class="breakdown-text">
+              <strong>Positive</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.positive || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-red"></div>
+            <div class="breakdown-text">
+              <strong>Negative</strong>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${pol.breakdown?.negative || 0}%
+          </span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-label">
+          Echo Chamber & Reinforcement
+        </div>
+        <div class="card-title">${echo.label || ''}</div>
+        <div class="card-sub">${echo.summary || ''}</div>
+        <div class="signal-label">
+          Echo chamber signal —
+          ${echo.score <= 3 ? 'High Risk'
+            : echo.score <= 6 ? 'Medium Risk' : 'Low Risk'}
+          (${echo.signal_percentage || 0}%)
+        </div>
+        <div class="signal-track">
+          <div class="signal-fill ${signalHigh ? 'high' : ''}"
+               style="width:${echo.signal_percentage||0}%">
+          </div>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-green"></div>
+            <div class="breakdown-text">
+              <strong>Unique sources</strong>
+              <span>Different creators, communities,
+                    perspectives</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${echo.breakdown?.unique_sources || 0}%
+          </span>
+        </div>
+        <div class="breakdown-item">
+          <div class="breakdown-left">
+            <div class="dot dot-orange"></div>
+            <div class="breakdown-text">
+              <strong>Repeated themes</strong>
+              <span>Similar messages appearing multiple
+                    times</span>
+            </div>
+          </div>
+          <span class="breakdown-pct">
+            ${echo.breakdown?.repeated_themes || 0}%
+          </span>
+        </div>
+        ${keyThemes ? `
+          <div class="divider"></div>
+          <div class="section-label"
+               style="margin-bottom:10px">
+            Key Themes
+          </div>
+          <div class="key-themes">${keyThemes}</div>
+        ` : ''}
+      </div>
+
+      <div class="print-card">
+        <div class="section-label">Printed Report Preview</div>
+        <div class="print-headline">
+          ${print.headline || ''}
+        </div>
+        <div class="print-lines">
+          <div class="print-line">
+            📊 ${print.line1 || ''}
+          </div>
+          <div class="print-line">
+            💭 ${print.line2 || ''}
+          </div>
+          <div class="print-line">
+            🔄 ${print.line3 || ''}
+          </div>
+        </div>
+        <div class="print-rec">
+          <strong>Recommendation</strong>
+          ${print.recommendation || ''}
+        </div>
+      </div>`;
+
+    // ── Receipt view ──────────────────────────────────
+    const receiptHTML = `
+      <div style="
+        background: #f5f0e8;
+        border-radius: 20px;
+        padding: 28px;
+        font-family: 'Courier New', monospace;
+        color: #1a1410;
+        white-space: pre-wrap;
+        font-size: 13px;
+        line-height: 1.6;
+        letter-spacing: 0.3px;
+        border: 1px solid var(--border);
+      ">
+        <div style="
+          text-align:center;
+          margin-bottom:16px;
+          font-size:11px;
+          color:#a8998a;
+          letter-spacing:2px;
+          text-transform:uppercase;
+        ">Receipt Preview — MC206H Format</div>
+        <div id="receipt-content-individual"
+             style="min-height:200px;text-align:center;
+                    color:#666;padding:40px 0">
+          Loading receipt...
+        </div>
+      </div>`;
+
+    document.getElementById('report-display').innerHTML = `
+      <div class="view-tabs">
+        <button class="view-tab
+          ${activeView === 'reflect' ? 'active' : ''}"
+          data-view="reflect"
+          onclick="switchView('reflect')">
+          Reflect Report
+        </button>
+        <button class="view-tab
+          ${activeView === 'json' ? 'active' : ''}"
+          data-view="json"
+          onclick="switchView('json')">
+          JSON Snapshot
+        </button>
+        <button class="view-tab
+          ${activeView === 'receipt' ? 'active' : ''}"
+          data-view="receipt"
+          onclick="switchView('receipt');loadReceiptPreview('individual')">
+          Receipt
+        </button>
+      </div>
+
+      <div class="reflect-report
+        ${activeView === 'reflect' ? 'visible' : ''}">
+        ${reflectHTML}
+      </div>
+
+      <div class="json-snapshot
+        ${activeView === 'json' ? 'visible' : ''}">
+        ${jsonHTML}
+      </div>
+
+      <div class="receipt-view
+        ${activeView === 'receipt' ? 'visible' : ''}">
+        ${receiptHTML}
+      </div>`;
+
+    if (activeView === 'receipt') {
+      loadReceiptPreview('individual');
+    }
+  }
+</script>
+</body>
+</html>
