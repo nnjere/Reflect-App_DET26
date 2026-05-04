@@ -25,6 +25,19 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 # ── Token store ───────────────────────────────────────
 user_tokens = {}
 
+# ── Pre-load dummy reports on startup ─────────────────
+def preload_dummy_reports():
+    personas = load_personas()
+    for key, tiktok_data in personas.items():
+        username = tiktok_data.get("user", {}).get("display_name", "User")
+        analysis = run_inference(tiktok_data, username)
+        server_reports[username] = {
+            "report_id": username,
+            "is_dummy": True,
+            "analysis": analysis
+        }
+    print(f"Preloaded {len(personas)} dummy reports")
+
 # ── Server-side report store (for ESP32 access) ───────
 server_reports = {}
 
@@ -869,3 +882,7 @@ async def receipt_print(count: int = 1):
 
     blend_data = run_blend_inference(selected)
     return PlainTextResponse(format_blend(blend_data))
+    
+@app.on_event("startup")
+async def startup_event():
+    preload_dummy_reports()
