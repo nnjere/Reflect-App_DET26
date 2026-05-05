@@ -306,7 +306,7 @@
       .phone-wrap { transform: scale(0.65); transform-origin: center center; }
     }
   </style>
-<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+</head>
 <body>
 <div class="root">
 
@@ -368,6 +368,13 @@
           <span class="nav-dot" style="background:#ff7d45"></span>
           Echo Chamber
         </button>
+        <button class="nav-btn"
+                data-src="user-explore.html"
+                data-label="Translation Layer"
+                onclick="loadScreen(this)">
+          <span class="nav-dot" style="background:#ff7faa"></span>
+          Translation Layer
+        </button>
       </div>
 
       <div class="nav-group">
@@ -421,7 +428,7 @@
       <div class="toolbar-divider"></div>
 
       <span class="screen-name" id="screen-label">Upload / Onboarding</span>
-      <span class="screen-badge">11 screens</span>
+      <span class="screen-badge">12 screens</span>
 
       <div class="toolbar-right">
         <a class="toolbar-btn" id="standalone-link" href="user-upload.html" target="_blank">

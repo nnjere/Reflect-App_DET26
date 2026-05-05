@@ -695,8 +695,9 @@ def run_blend_inference(reports: list) -> dict:
         return {}
 
 @app.post("/blend")
-async def blend(request: dict):
-    reports = request.get("reports", [])
+async def blend(request: Request):
+    body = await request.json()
+    reports = body.get("reports", [])
     if len(reports) < 2:
         return {"error": "Need at least 2 reports to blend"}
     if len(reports) > 6:
@@ -927,11 +928,6 @@ async def receipt_print(count: int = 1):
     blend_data = run_blend_inference(selected)
     return PlainTextResponse(format_blend(blend_data, selected))
 
-# 
-app.mount("/prototype", StaticFiles(
-    directory=os.path.join(os.path.dirname(__file__), "templates", "prototype")
-), name="prototype")
-
 # ── Section 12: Explore word lookup endpoint ──────────
 class ExploreRequest(BaseModel):
     word: str
@@ -978,6 +974,12 @@ async def explore_word(req: ExploreRequest):
         return json.loads(raw)
     except json.JSONDecodeError:
         return {"word": req.word, "category": "Term", "definition": raw, "related": []}
+
+# 
+app.mount("/prototype", StaticFiles(
+    directory=os.path.join(os.path.dirname(__file__), "templates", "prototype")
+), name="prototype")
+
 
 @app.on_event("startup")
 async def startup_event():
