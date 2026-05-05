@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Emotional Tone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .page {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 24px;
+    }
+    .page-scroll::-webkit-scrollbar { display: none; }
+    .page-scroll { scrollbar-width: none; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252, 239, 222, 0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-icon { width: 24px; height: 24px; }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
+    .nav-label--active { color: #ff7faa; }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: relative;
+      height: 104px;
+      padding-top: 35px;
+      padding-left: 13px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .back-btn img { width: 20px; height: 20px; }
+
+    .back-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .topbar-decoration {
+      position: absolute;
+      top: 7px;
+      right: 4px;
+      width: 95px;
+      height: 97px;
+    }
+
+    .topbar-decoration img { position: absolute; }
+    .ellipse-1 { top: 0; left: 4px; width: 78px; height: 59px; transform: rotate(131.31deg); }
+    .ellipse-2 { top: 2px; left: 12px; width: 78px; height: 45px; transform: rotate(118.66deg); }
+    .star-icon  { top: 20px; left: 21px; width: 59px; height: 54px; }
+
+    /* ── Page header card ── */
+    .header-card {
+      margin: 0 12px 27px;
+      background: rgba(255,237,226,0.6);
+      border-radius: 20px;
+      padding: 20px 25px;
+      box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.1);
+    }
+
+    .header-overline {
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-size: 30px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.40px;
+      line-height: 36px;
+      margin-bottom: 10px;
+    }
+
+    .header-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+    }
+
+    /* ── Card stack ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 27px;
+      padding: 0 24px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .card--cream { background: #fefaef; }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      line-height: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-label--bold {
+      font-weight: 700;
+      color: #000;
+    }
+
+    /* ── Tone rows ── */
+    .tone-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tone-item {}
+
+    .tone-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .tone-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 20px;
+    }
+
+    .tone-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .tone-dot--green  { background: #85b87d; }
+    .tone-dot--yellow { background: #fdff85; }
+    .tone-dot--orange { background: #ff7d45; }
+
+    .tone-pct {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .tone-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: #000;
+      line-height: 16px;
+      padding-left: 16px;
+    }
+
+    /* ── Bullet list ── */
+    .bullet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .bullet-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8f8f8f;
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+
+    .bullet-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+    }
+
+    /* ── Nuance ── */
+    .nuance-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+    }
+
+    .nuance-text + .nuance-text { margin-top: 16px; }
+
+    /* ── Reflection boxes ── */
+    .reflection-boxes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .reflection-box {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.1);
+      min-height: 77px;
+      display: flex;
+      align-items: center;
+    }
+
+    .reflection-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+    }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+<div class="page">
+  <div class="page-scroll">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <a class="back-btn" href="user-dashboard.html">
+        <img src="./assets/ab5ce95388de20a65e8f90f933f6d2295a6abeba.svg" alt="Back" />
+        <span class="back-label">Back</span>
+      </a>
+      <div class="topbar-decoration">
+        <img class="ellipse-1" src="./assets/5ea5b9df4c21607221971994b6fa8d5182e9562f.svg" alt="" />
+        <img class="ellipse-2" src="./assets/ff18d42df1512849be200bd4b708d57a450b0beb.svg" alt="" />
+        <img class="star-icon"  src="./assets/47c8fcdae0a7e9b6218a13682479f1f3bd338be1.svg" alt="" />
+      </div>
+    </div>
+
+    <!-- Header card -->
+    <div class="header-card">
+      <p class="header-overline">Emotional Tone</p>
+      <h1 class="header-title">Mostly Positive</h1>
+      <p class="header-desc">Your feed currently leans toward content that is uplifting, aspirational, and emotionally engaging.</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- 1 · Emotional Tone breakdown -->
+      <div class="card card--cream">
+        <p class="section-label">Emotional Tone</p>
+        <div class="tone-items">
+          <div class="tone-item">
+            <div class="tone-row">
+              <div class="tone-title">
+                <div class="tone-dot tone-dot--green"></div>
+                Positive content
+              </div>
+              <span class="tone-pct">65%</span>
+            </div>
+            <p class="tone-desc">Uplifting, entertaining, motivational</p>
+          </div>
+          <div class="tone-item">
+            <div class="tone-row">
+              <div class="tone-title">
+                <div class="tone-dot tone-dot--yellow"></div>
+                Neutral content
+              </div>
+              <span class="tone-pct">28%</span>
+            </div>
+            <p class="tone-desc">Informational, observational</p>
+          </div>
+          <div class="tone-item">
+            <div class="tone-row">
+              <div class="tone-title">
+                <div class="tone-dot tone-dot--orange"></div>
+                Polarizing content
+              </div>
+              <span class="tone-pct">7%</span>
+            </div>
+            <p class="tone-desc">Emotionally charged or opinion-driven</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 · How this is determined -->
+      <div class="card">
+        <p class="section-label">How this is determined</p>
+        <div class="bullet-list">
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Language used in captions and videos</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Visual tone and editing style</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Engagement patterns (time spent, interaction)</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Associated communities and creators</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 · Important Nuance -->
+      <div class="card">
+        <p class="section-label">Important Nuance</p>
+        <p class="nuance-text">"Positive" content is not always neutral or beneficial. It can include comparison, pressure, or aspirational messaging that affects how you feel about yourself.</p>
+        <p class="nuance-text">These insights reflect patterns in your feed, not judgments about what you should or shouldn't consume. They're meant to increase awareness.</p>
+      </div>
+
+      <!-- 4 · Reflection -->
+      <div class="card">
+        <p class="section-label section-label--bold">Reflection</p>
+        <div class="reflection-boxes">
+          <div class="reflection-box">
+            <p class="reflection-text">Does your feed feel energizing or overwhelming?</p>
+          </div>
+          <div class="reflection-box">
+            <p class="reflection-text">Do you feel connected to this content, or just consuming it?</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /cards -->
+  </div><!-- /page-scroll -->
+
+  <!-- Bottom nav — Home tab active (detail page accessed from dashboard) -->
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/995c3916f260cfa20b8408857a974fae0bd99308.svg" alt="Home" />
+      <span class="nav-label nav-label--active">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/afc31d25087a32ee7a43e009a69c7ba9a557b40e.svg" alt="Ecosystem" />
+      <span class="nav-label">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+
+</div><!-- /page -->
+</body>
+</html>

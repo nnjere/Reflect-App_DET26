@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Digital Patterns Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .phone {
+      width: 393px;
+      height: 844px;           /* fixed device height */
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* scrollable content area — fills space above the pinned nav */
+    .phone-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 24px;    /* clearance above nav */
+    }
+
+    /* hide scrollbar visually but keep it functional */
+    .phone-scroll::-webkit-scrollbar { display: none; }
+    .phone-scroll { scrollbar-width: none; }
+
+    /* ── Header ── */
+    .header {
+      position: relative;
+      padding: 33px 33px 0;
+      min-height: 104px;
+    }
+
+    .greeting {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 1.45;
+      letter-spacing: -0.15px;
+      max-width: 229px;
+    }
+
+    .greeting em {
+      font-style: italic;
+      color: rgba(255, 107, 157, 0.66);
+    }
+
+    .header-decoration {
+      position: absolute;
+      top: 20px;
+      right: 4px;
+      width: 95px;
+      height: 97px;
+    }
+
+    .header-decoration img {
+      position: absolute;
+    }
+
+    .ellipse-1 {
+      top: 0; left: 4px;
+      width: 78px; height: 59px;
+      transform: rotate(131.31deg);
+      transform-origin: center;
+    }
+
+    .ellipse-2 {
+      top: 2px; left: 12px;
+      width: 78px; height: 45px;
+      transform: rotate(118.66deg);
+      transform-origin: center;
+    }
+
+    .star-icon {
+      top: 14px; left: 21px;
+      width: 59px; height: 54px;
+    }
+
+    /* ── Section heading ── */
+    .section-heading {
+      padding: 92px 30px 0;
+    }
+
+    .overline {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .main-title {
+      font-size: 36px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.37px;
+      line-height: 40px;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      padding: 20px 12px 0;
+    }
+
+    .stat-item {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 2px;
+    }
+
+    .stat-blur {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      opacity: 0.4;
+      filter: blur(20px);
+    }
+
+    .stat-blur--purple { background: linear-gradient(147.13deg, rgba(173,70,255,0.2) 0%, rgba(194,122,255,0.1) 100%); }
+    .stat-blur--blue   { background: linear-gradient(147.13deg, rgba(43,127,255,0.2) 0%, rgba(81,162,255,0.1) 100%); }
+    .stat-blur--pink   { background: linear-gradient(147.13deg, rgba(246,51,154,0.2) 0%, rgba(251,100,182,0.1) 100%); }
+
+    .stat-number {
+      position: relative;
+      font-size: 30px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.40px;
+      line-height: 36px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .stat-label {
+      position: relative;
+      font-size: 10px;
+      font-weight: 400;
+      color: #000;
+      letter-spacing: 0.55px;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 20px;
+    }
+
+    /* ── Cards ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 27px;
+      padding: 27px 11px 0;
+    }
+
+    .card {
+      background: rgba(255, 237, 226, 0.6);
+      border-radius: 20px;
+      padding: 20px 25px;
+      box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.1);
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .card:active {
+      transform: scale(0.985);
+      box-shadow: inset 0px 1px 1px 0px rgba(0,0,0,0.15);
+    }
+
+    .card--light { background: rgba(255, 237, 226, 0.7); }
+    .card--solid { background: #ffede2; }
+
+    .card-overline {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.07px;
+      line-height: 32px;
+      margin-bottom: 4px;
+    }
+
+    .card-title--lg {
+      font-size: 30px;
+      letter-spacing: 0.40px;
+      line-height: 36px;
+    }
+
+    /* ── Progress bars (card 1) ── */
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+    }
+
+    .progress-pct {
+      font-size: 14px;
+      font-weight: 400;
+      color: #0a0a0a;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+    }
+
+    .progress-track {
+      height: 24px;
+      background: #ffe4d9;
+      border-radius: 9999px;
+      overflow: hidden;
+      position: relative;
+      filter: blur(0.5px);
+    }
+
+    .progress-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      border-radius: 9999px;
+      box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+    }
+
+    /* Individual fill widths & gradients */
+    .fill--pop-culture  { width: 132px; background: linear-gradient(90deg, rgba(173,70,255,0.85), rgba(255,100,160,0.7)); }
+    .fill--entertainment{ width: 95px;  background: linear-gradient(90deg, rgba(255,100,80,0.9), rgba(255,160,60,0.8)); }
+    .fill--wellness     { width: 107px; background: linear-gradient(90deg, rgba(255,80,140,0.9), rgba(255,140,100,0.7)); }
+    .fill--other        { width: 126px; background: linear-gradient(90deg, rgba(255,140,60,0.9), rgba(255,200,60,0.8)); }
+
+    /* ── Echo chamber card ── */
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0;
+    }
+
+    .metric-row-label {
+      font-size: 16px;
+      font-weight: 400;
+      color: #0a0a0a;
+      letter-spacing: -0.31px;
+      line-height: 24px;
+    }
+
+    .metric-row-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: #0a0a0a;
+      letter-spacing: -0.31px;
+      line-height: 24px;
+    }
+
+    .signal-bar-track {
+      height: 12px;
+      background: rgba(255,127,170,0.15);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 8px 0 10px;
+    }
+
+    .signal-bar-fill {
+      height: 100%;
+      width: 24%;
+      background: linear-gradient(90deg, #00c950, #00d492);
+      border-radius: 9999px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 16px;
+      max-width: 282px;
+    }
+
+    .section-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 10px;
+    }
+
+    /* ── Theme tags ── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 5px;
+    }
+
+    .tag {
+      height: 44px;
+      padding: 12px 24px;
+      background: rgba(255,127,170,0.15);
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      white-space: nowrap;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── Emotional tone tiles ── */
+    .tone-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tone-tile {
+      flex: 1;
+      height: 72px;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .tone-tile--positive  { background: linear-gradient(135deg, #00c6a2, #00d492); }
+    .tone-tile--neutral   { background: linear-gradient(135deg, #f97316, #fbbf24); }
+    .tone-tile--polarized { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+    .tone-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.44px;
+      line-height: 28px;
+      text-align: center;
+    }
+
+    .tone-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    /* ── Card chevron ── */
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .card-header-row .card-title { margin-bottom: 0; }
+
+    .card-chevron {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 6px;
+      opacity: 0.35;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .card:hover .card-chevron {
+      opacity: 0.6;
+      transform: translateX(2px);
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      /* flex child — sits at the bottom of .phone, never scrolls */
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252, 239, 222, 0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      color: #8f8f8f;
+    }
+
+    .nav-label--active { color: #ff7faa; }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+  <div class="phone">
+  <div class="phone-scroll">
+
+    <!-- Header -->
+    <div class="header">
+      <p class="greeting">
+        Good Morning <span id="r-username">Ishani</span>,<br>
+        Your media consumption<br>
+        has been <em id="r-overall-label">Diverse</em> today
+      </p>
+      <div class="header-decoration">
+        <img class="ellipse-1" src="./assets/5ea5b9df4c21607221971994b6fa8d5182e9562f.svg" alt="" />
+        <img class="ellipse-2" src="./assets/ff18d42df1512849be200bd4b708d57a450b0beb.svg" alt="" />
+        <img class="star-icon" src="./assets/47c8fcdae0a7e9b6218a13682479f1f3bd338be1.svg" alt="" />
+      </div>
+    </div>
+
+    <!-- Section heading -->
+    <div class="section-heading">
+      <p class="overline">Your Overview</p>
+      <h1 class="main-title">Digital Patterns</h1>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-blur stat-blur--purple"></div>
+        <span class="stat-number" id="r-stat-watched">743</span>
+        <span class="stat-label">Watched</span>
+      </div>
+      <div class="stat-item">
+        <div class="stat-blur stat-blur--blue"></div>
+        <span class="stat-number" id="r-stat-types">42</span>
+        <span class="stat-label">Types</span>
+      </div>
+      <div class="stat-item">
+        <div class="stat-blur stat-blur--pink"></div>
+        <span class="stat-number" id="r-stat-diversity">89%</span>
+        <span class="stat-label">Diversity</span>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- Card 1: Content Patterns & Diversity -->
+      <a class="card" href="user-content-patterns.html" aria-label="View Content Patterns & Diversity detail">
+        <p class="card-overline">Content Patterns &amp; Diversity</p>
+        <div class="card-header-row">
+          <h2 class="card-title" id="r-diversity-label">High</h2>
+          <svg class="card-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 5l5 5-5 5" stroke="#262626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Pop Culture</span>
+              <span class="progress-pct">32%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill--pop-culture"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Entertainment</span>
+              <span class="progress-pct">28%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill--entertainment"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Wellness</span>
+              <span class="progress-pct">28%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill--wellness"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Other Categories</span>
+              <span class="progress-pct">28%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill--other"></div>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 2: Echo Chamber & Reinforcement -->
+      <a class="card card--light" href="user-echo-chamber.html" aria-label="View Echo Chamber & Reinforcement detail">
+        <p class="card-overline">Echo Chamber &amp; Reinforcement</p>
+        <div class="card-header-row">
+          <h2 class="card-title card-title--lg" id="r-echo-label">Low Repetition</h2>
+          <svg class="card-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 5l5 5-5 5" stroke="#262626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div class="metric-row">
+            <span class="metric-row-label">Echo Chamber Signal</span>
+            <span class="metric-row-value" id="r-echo-pct">Low (24%)</span>
+          </div>
+          <div class="signal-bar-track">
+            <div class="signal-bar-fill"></div>
+          </div>
+          <p class="card-desc">You're exposed to diverse perspectives and viewpoints</p>
+          <p class="section-label">Key Themes This Week:</p>
+          <div class="tags">
+            <span class="tag">Pop Culture</span>
+            <span class="tag">Fashion &amp; Beauty</span>
+            <span class="tag">Tech Innovation</span>
+            <span class="tag">Wellness</span>
+            <span class="tag">Social Justice</span>
+            <span class="tag">Art &amp; Creativity</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3: Emotional Tone -->
+      <a class="card card--solid" href="user-emotional-tone.html" aria-label="View Emotional Tone detail">
+        <p class="card-overline">Emotional Tone</p>
+        <div class="card-header-row">
+          <h2 class="card-title card-title--lg" id="r-emo-label">Mostly Positive</h2>
+          <svg class="card-chevron" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 5l5 5-5 5" stroke="#262626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <p class="card-desc" style="margin-top: 10px;">
+          Based on content analysis and your input, we calculate the emotional tone based on the language used and communities associated
+        </p>
+
+        <div class="tone-row">
+          <div class="tone-tile tone-tile--positive">
+            <span class="tone-name">Positive</span>
+            <span class="tone-pct" id="r-emo-positive">62%</span>
+          </div>
+          <div class="tone-tile tone-tile--neutral">
+            <span class="tone-name">Neutral</span>
+            <span class="tone-pct" id="r-emo-neutral">25%</span>
+          </div>
+          <div class="tone-tile tone-tile--polarized">
+            <span class="tone-name">Polarized</span>
+            <span class="tone-pct" id="r-emo-polarized">13%</span>
+          </div>
+        </div>
+      </a>
+
+    </div><!-- /cards -->
+  </div><!-- /phone-scroll -->
+
+  <!-- Bottom nav — pinned flex child, never scrolls -->
+  <nav class="bottom-nav">
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/995c3916f260cfa20b8408857a974fae0bd99308.svg" alt="Home" />
+      <span class="nav-label nav-label--active">Home</span>
+    </div>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/afc31d25087a32ee7a43e009a69c7ba9a557b40e.svg" alt="Ecosystem" />
+      <span class="nav-label">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+
+  </div><!-- /phone -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const report = Reflect.getReport();
+    if (!report) return;
+
+    Reflect.hydrateDashboard(report);
+
+    // Update theme bars from live data
+    const themes = Reflect.getThemes(report);
+    const items = document.querySelectorAll('.progress-item');
+    const gradients = [
+      'linear-gradient(90deg,rgba(173,70,255,0.85),rgba(255,100,160,0.7))',
+      'linear-gradient(90deg,rgba(255,100,80,0.9),rgba(255,160,60,0.8))',
+      'linear-gradient(90deg,rgba(255,80,140,0.9),rgba(255,140,100,0.7))',
+      'linear-gradient(90deg,rgba(255,140,60,0.9),rgba(255,200,60,0.8))',
+    ];
+    items.forEach((item, i) => {
+      if (!themes[i]) return;
+      const t = themes[i];
+      item.querySelector('.progress-label').textContent = t.theme;
+      item.querySelector('.progress-pct').textContent   = `${t.percentage}%`;
+      const fill = item.querySelector('.progress-fill');
+      if (fill) {
+        fill.style.width      = `${Math.round(t.percentage * 1.6)}px`;
+        fill.style.background = gradients[i % gradients.length];
+      }
+    });
+
+    // Update echo tags
+    const echo = Reflect.getEchoChamber(report);
+    const tagsEl = document.querySelector('.tags');
+    if (tagsEl && echo.key_themes?.length) {
+      tagsEl.innerHTML = echo.key_themes
+        .map(t => `<span class="tag">${t}</span>`).join('');
+    }
+    const signalFill = document.querySelector('.signal-bar-fill');
+    if (signalFill) signalFill.style.width = `${echo.signal_percentage || 24}%`;
+  });
+</script>
+</body>
+</html>

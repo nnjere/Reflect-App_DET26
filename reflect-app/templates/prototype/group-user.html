@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Family – Alex Selected</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .page {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* This page doesn't scroll — the member sheet fills the bottom */
+    .page-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    .topbar { position: relative; padding: 48px 24px 0; margin-bottom: 16px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 14px; font-weight: 500; color: #8f8f8f; line-height: 20px; }
+    .topbar-deco { position: absolute; top: 33px; right: 4px; width: 53px; height: 51px; object-fit: cover; }
+
+    .page-header { padding: 0 24px; margin-bottom: 16px; }
+    .page-title { font-size: 30px; font-weight: 600; color: #0a0a0a; line-height: 36px; text-transform: capitalize; }
+    .page-subtitle { font-size: 14px; font-weight: 400; color: #8f8f8f; line-height: 20px; margin-top: 4px; }
+
+    .filter-tabs { display: flex; gap: 8px; padding: 0 24px 16px; overflow-x: auto; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tabs { scrollbar-width: none; }
+    .filter-tab {
+      flex-shrink: 0;
+      height: 36px;
+      border-radius: 9999px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      line-height: 36px;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .filter-tab--active { background: rgba(255,255,255,0.6); color: #0a0a0a; box-shadow: 0px 1px 3px rgba(0,0,0,0.1); }
+    .filter-tab--ghost  { background: rgba(255,255,255,0.2); color: #8f8f8f; }
+
+    /* ── Viz card (same as wellness, green tint) ── */
+    .viz-card {
+      margin: 0 21px 0;
+      height: 332px;
+      border-radius: 32px;
+      background: rgba(127, 255, 193, 0.2);
+      box-shadow: inset 0px 1px 4px 0px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+    }
+    .viz-card img.vc { position: absolute; }
+    .viz-label {
+      position: absolute;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      line-height: 16px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── Member sheet — slides up from bottom, overlaps viz card ── */
+    /* Positioned absolute within .page-content to overlap the viz card */
+    .member-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 340px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 32px 32px 0 0;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 24px 24px 16px;
+      z-index: 10;
+    }
+
+    /* Sheet header row: name + close button */
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .sheet-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 32px;
+    }
+
+    .sheet-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(143, 143, 143, 0.2);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #8f8f8f;
+      font-family: 'Inter', sans-serif;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .sheet-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 22.75px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Progress bars ── */
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+
+    .bar-row { display: flex; flex-direction: column; gap: 4px; }
+
+    .bar-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .bar-category {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+      text-transform: capitalize;
+    }
+
+    .bar-pct {
+      font-size: 12px;
+      font-weight: 400;
+      color: #0a0a0a;
+      line-height: 16px;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252,239,222,0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; cursor: pointer; }
+    .nav-icon { width: 24px; height: 24px; }
+    .nav-label { font-size: 12px; font-weight: 400; color: #8f8f8f; line-height: 16px; }
+    .nav-label--active { color: #ff7faa; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- The main content area uses position:relative so the sheet can be absolute inside it -->
+  <div class="page-content">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <a href="group-wellness.html" class="back-btn">← Back</a>
+      <img class="topbar-deco" src="./assets/df1665f3acd82de30bb7f60478cfd00c61169a80.png" alt="" />
+    </div>
+
+    <!-- Page heading -->
+    <div class="page-header">
+      <h1 class="page-title">Family</h1>
+      <p class="page-subtitle">4 people in this ecosystem</p>
+    </div>
+
+    <!-- Filter tabs — Wellness active -->
+    <div class="filter-tabs">
+      <a href="group-overview.html"      class="filter-tab filter-tab--ghost">All</a>
+      <a href="group-entertainment.html" class="filter-tab filter-tab--ghost">Entertainment</a>
+      <a href="group-wellness.html"      class="filter-tab filter-tab--active">Wellness</a>
+      <span class="filter-tab filter-tab--ghost">Politics</span>
+      <span class="filter-tab filter-tab--ghost">Education</span>
+    </div>
+
+    <!-- Viz card (same green wellness view, Alex highlighted) -->
+    <div class="viz-card">
+
+      <img class="vc" src="./assets/609361d6493d3388156f71214ccfee2662f3c78d.svg"
+           style="left:23px; top:-10px; width:300px; height:300px;" alt="" />
+      <img class="vc" src="./assets/6d8d91ed43d15fd7371156ebf66bbcbed34d4ab9.svg"
+           style="left:73px; top:40px; width:200px; height:200px;" alt="" />
+      <img class="vc" src="./assets/d48ef3430b31c9708ccaa11089bed2ece95fa2ce.svg"
+           style="left:97px; top:64px; width:150px; height:150px;" alt="" />
+
+      <!-- Mom -->
+      <img class="vc" src="./assets/dcbc1231d89bffb9d28bf9cde3c9830a360202cb.svg"
+           style="left:19px; top:6px; width:58px; height:66px;" alt="" />
+      <!-- Dad / D. -->
+      <img class="vc" src="./assets/efe93f1744dac0e9d9890e6be90fb82780e954a9.svg"
+           style="left:19px; top:185px; width:33px; height:39px;" alt="" />
+      <!-- You area -->
+      <img class="vc" src="./assets/2e2a68d20f26665968da808b525a532436eb49a6.svg"
+           style="left:123px; top:89px; width:100px; height:100px;" alt="" />
+      <!-- You dot (tiny) -->
+      <img class="vc" src="./assets/516b536a783303ae1917841533b69914c6645ae8.svg"
+           style="left:164px; top:130px; width:18px; height:22px;" alt="" />
+      <!-- Alex / A. -->
+      <img class="vc" src="./assets/b1dbb8b5102fd1ee00a5d9dc96df118a93f5840a.svg"
+           style="left:207px; top:6px; width:33px; height:39px;" alt="" />
+      <!-- Gma -->
+      <img class="vc" src="./assets/bc9e52bd93f6bf272b9f1cc19f13ac835536d91d.svg"
+           style="left:218px; top:124px; width:58px; height:66px;" alt="" />
+
+      <span class="viz-label" style="left: 33px; top: 27px;">Mom</span>
+      <span class="viz-label" style="left: 31px; top:194px;">D.</span>
+      <span class="viz-label" style="left:219px; top: 14px;">A.</span>
+      <span class="viz-label" style="left:233px; top:145px;">Gma</span>
+    </div><!-- /viz-card -->
+
+    <!-- ── Member sheet (overlaps the viz card from the bottom) ── -->
+    <div class="member-sheet">
+
+      <div class="sheet-header">
+        <span class="sheet-name">Alex</span>
+        <a href="group-wellness.html" class="sheet-close">✕</a>
+      </div>
+
+      <p class="sheet-desc">Alex's content focuses primarily on entertainment</p>
+
+      <div class="bars">
+
+        <!-- Entertainment 90% -->
+        <div class="bar-row">
+          <div class="bar-meta">
+            <span class="bar-category">Entertainment</span>
+            <span class="bar-pct">90%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 90%; background: #ffb88c;"></div>
+          </div>
+        </div>
+
+        <!-- Wellness 20% -->
+        <div class="bar-row">
+          <div class="bar-meta">
+            <span class="bar-category">Wellness</span>
+            <span class="bar-pct">20%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 20%; background: #85b87d;"></div>
+          </div>
+        </div>
+
+        <!-- Education 20% -->
+        <div class="bar-row">
+          <div class="bar-meta">
+            <span class="bar-category">Education</span>
+            <span class="bar-pct">20%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 20%; background: #93c5fd;"></div>
+          </div>
+        </div>
+
+        <!-- Politics 10% -->
+        <div class="bar-row">
+          <div class="bar-meta">
+            <span class="bar-category">Politics</span>
+            <span class="bar-pct">10%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 10%; background: #fca5a5;"></div>
+          </div>
+        </div>
+
+      </div><!-- /bars -->
+    </div><!-- /member-sheet -->
+
+  </div><!-- /page-content -->
+
+  <!-- Bottom nav — Ecosystem active -->
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/7b89d414e36ba6c45c8f6c3d33950e15c883f55f.svg" alt="Ecosystem" />
+      <span class="nav-label nav-label--active">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+</div>
+</body>
+</html>

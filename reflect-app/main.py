@@ -8,6 +8,7 @@ import os
 import json
 import random
 from datetime import datetime
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
@@ -80,6 +81,14 @@ async def report():
         os.path.dirname(__file__), "templates", "report.html")
     with open(template_path, "r") as f:
         return f.read()
+
+# ── Section 2b: Serve prototype ────────────────────────
+@app.get("/prototype/", response_class=HTMLResponse)
+async def prototype():
+    path = os.path.join(os.path.dirname(__file__), "templates", "prototype", "index.html")
+    with open(path, "r") as f:
+        return f.read()
+
 
 # ── Section 3: TikTok login ───────────────────────────
 @app.get("/login")
@@ -902,7 +911,12 @@ async def receipt_print(count: int = 1):
 
     blend_data = run_blend_inference(selected)
     return PlainTextResponse(format_blend(blend_data, selected))
-    
+
+# 
+app.mount("/prototype", StaticFiles(
+    directory=os.path.join(os.path.dirname(__file__), "templates", "prototype")
+), name="prototype")
+
 @app.on_event("startup")
 async def startup_event():
     preload_dummy_reports()

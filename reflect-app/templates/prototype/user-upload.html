@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Reflect — Upload</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .page {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 40px;
+    }
+    .page-scroll::-webkit-scrollbar { display: none; }
+    .page-scroll { scrollbar-width: none; }
+
+    /* ── Header ── */
+    .header {
+      padding: 52px 28px 0;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .logo {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: #0a0a0a;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .logo-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff7faa;
+      vertical-align: middle;
+      margin-left: 3px;
+      margin-bottom: 6px;
+    }
+
+    /* ── Welcome text ── */
+    .welcome {
+      margin: 16px 24px 0;
+      text-align: center;
+    }
+
+    .welcome-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 22px;
+      margin-bottom: 6px;
+    }
+
+    .welcome-sub {
+      font-size: 13px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    /* ── Section card ── */
+    .section-card {
+      margin: 16px 21px 0;
+      background: rgba(255,255,255,0.4);
+      border-radius: 28px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a0a0a;
+      margin-bottom: 4px;
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: #8f8f8f;
+      line-height: 18px;
+      margin-bottom: 14px;
+    }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed rgba(255,127,170,0.4);
+      border-radius: 20px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,127,170,0.04);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: #ff7faa;
+      background: rgba(255,127,170,0.08);
+    }
+
+    .upload-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .upload-zone-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a0a0a;
+      margin-bottom: 4px;
+    }
+
+    .upload-zone-sub {
+      font-size: 11px;
+      color: #8f8f8f;
+      line-height: 16px;
+      margin-bottom: 12px;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      height: 36px;
+      padding: 0 20px;
+      background: #ff7faa;
+      border: none;
+      border-radius: 9999px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      line-height: 36px;
+    }
+
+    #json-file-input { display: none; }
+
+    /* ── How-to steps ── */
+    .howto {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .howto-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11px;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
+    .step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255,127,170,0.15);
+      color: #ff7faa;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Or divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 21px 0;
+      font-size: 12px;
+      color: #8f8f8f;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(0,0,0,0.08);
+    }
+
+    /* ── Persona grid ── */
+    .personas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 21px 0;
+    }
+
+    .persona-card {
+      background: rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 14px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all 0.15s;
+      box-shadow: inset 0px 0.5px 1px rgba(0,0,0,0.1);
+    }
+
+    .persona-card:hover {
+      border-color: rgba(255,127,170,0.4);
+      background: rgba(255,127,170,0.06);
+    }
+
+    .persona-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a0a0a;
+      margin-bottom: 2px;
+    }
+
+    .persona-desc {
+      font-size: 11px;
+      color: #8f8f8f;
+      line-height: 15px;
+    }
+
+    .persona-tag {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .persona-tag--red    { background: rgba(248,113,113,0.12); color: #dc2626; }
+    .persona-tag--purple { background: rgba(167,139,250,0.12); color: #7c3aed; }
+    .persona-tag--orange { background: rgba(251,146,60,0.12);  color: #ea580c; }
+    .persona-tag--green  { background: rgba(134,239,172,0.15); color: #16a34a; }
+
+    /* ── Loading overlay ── */
+    .loading-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(254,247,229,0.94);
+      border-radius: 44px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 50;
+    }
+
+    .loading-overlay.active { display: flex; }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,127,170,0.2);
+      border-top-color: #ff7faa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #262626;
+      text-align: center;
+      max-width: 220px;
+      line-height: 20px;
+    }
+
+    .loading-sub {
+      font-size: 12px;
+      color: #8f8f8f;
+      text-align: center;
+      max-width: 220px;
+      line-height: 18px;
+    }
+
+    /* ── Error toast ── */
+    .error-toast {
+      display: none;
+      position: absolute;
+      bottom: 32px;
+      left: 20px;
+      right: 20px;
+      background: #fef2f2;
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #dc2626;
+      line-height: 16px;
+      z-index: 60;
+    }
+
+    .error-toast.active { display: block; }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+<div class="page">
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Analyzing your media diet...</div>
+    <div class="loading-sub">This takes 15–30 seconds</div>
+  </div>
+
+  <!-- Error toast -->
+  <div class="error-toast" id="error-toast"></div>
+
+  <div class="page-scroll">
+
+    <!-- Logo -->
+    <div class="header">
+      <div class="logo">reflect<span class="logo-dot"></span></div>
+    </div>
+
+    <!-- Welcome -->
+    <div class="welcome">
+      <p class="welcome-title">Welcome to Reflect</p>
+      <p class="welcome-sub">Upload your TikTok data to see your real patterns, or select a sample below to see how it works</p>
+    </div>
+
+    <!-- Upload card -->
+    <div class="section-card">
+      <p class="section-title">Upload Your TikTok Data</p>
+      <p class="section-sub" id="section-sub">Upload your TikTok data export for a personalised analysis</p>
+
+      <div class="upload-zone" id="upload-zone"
+           onclick="document.getElementById('json-file-input').click()"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event)"
+           ondrop="handleDrop(event)">
+        <span class="upload-icon">✦</span>
+        <p class="upload-zone-title">Upload TikTok JSON</p>
+        <p class="upload-zone-sub">Tap to choose your file, or drag & drop</p>
+        <button class="upload-btn">Choose File</button>
+        <input type="file" id="json-file-input" accept=".json" onchange="handleFileSelect(this)" />
+      </div>
+
+      <div class="howto">
+        <div class="howto-step">
+          <div class="step-num">1</div>
+          <span>Open TikTok → Profile → ☰ → Settings → Privacy → Download your data</span>
+        </div>
+        <div class="howto-step">
+          <div class="step-num">2</div>
+          <span>Select JSON format and request your data</span>
+        </div>
+        <div class="howto-step">
+          <div class="step-num">3</div>
+          <span>Once emailed, extract the ZIP and upload the JSON file here</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="or-divider">or try a sample</div>
+
+    <!-- Personas -->
+    <div class="personas-grid">
+      <div class="persona-card" onclick="loadSample('marcus')">
+        <p class="persona-name">Marcus</p>
+        <p class="persona-desc">Radicalized pipeline, late-night scrolling</p>
+        <span class="persona-tag persona-tag--red">Siloed</span>
+      </div>
+      <div class="persona-card" onclick="loadSample('emma')">
+        <p class="persona-name">Emma</p>
+        <p class="persona-desc">Tradwife aesthetic, morning consumer</p>
+        <span class="persona-tag persona-tag--purple">Balanced</span>
+      </div>
+      <div class="persona-card" onclick="loadSample('kai')">
+        <p class="persona-name">Kai</p>
+        <p class="persona-desc">Culture nerd, evening & late-night</p>
+        <span class="persona-tag persona-tag--orange">Diverse</span>
+      </div>
+      <div class="persona-card" onclick="loadSample('zoe')">
+        <p class="persona-name">Zoe</p>
+        <p class="persona-desc">Conscious consumer, early morning</p>
+        <span class="persona-tag persona-tag--green">Diverse</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Show last report hint if one exists
+  const existing = Reflect.getReport();
+  if (existing) {
+    const sub = document.getElementById('section-sub');
+    if (sub) sub.textContent = `Last report: ${(existing.report_id||'').replace('_Dummy','')} — upload new data or pick a sample`;
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.add('drag-over');
+  }
+
+  function handleDragLeave(e) {
+    document.getElementById('upload-zone').classList.remove('drag-over');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  }
+
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (file) processFile(file);
+    input.value = '';
+  }
+
+  async function processFile(file) {
+    if (!file.name.endsWith('.json')) {
+      showError('Please upload a .json file from your TikTok data export.');
+      return;
+    }
+    showLoading('Uploading your data...');
+    try {
+      await Reflect.uploadJson(file);
+      document.getElementById('loading-text').textContent = 'Analysis complete!';
+      setTimeout(() => { window.location.href = 'user-dashboard.html'; }, 600);
+    } catch(err) {
+      hideLoading();
+      showError(err.message || 'Upload failed. Please try again.');
+    }
+  }
+
+  async function loadSample(persona) {
+    showLoading(`Loading ${persona.charAt(0).toUpperCase()+persona.slice(1)}'s profile...`);
+    try {
+      await Reflect.loadPersona(persona);
+      document.getElementById('loading-text').textContent = 'Ready!';
+      setTimeout(() => { window.location.href = 'user-dashboard.html'; }, 400);
+    } catch(err) {
+      hideLoading();
+      showError(err.message || 'Failed to load sample. Please try again.');
+    }
+  }
+
+  function showLoading(msg) {
+    document.getElementById('loading-text').textContent = msg || 'Loading...';
+    document.getElementById('loading-overlay').classList.add('active');
+  }
+
+  function hideLoading() {
+    document.getElementById('loading-overlay').classList.remove('active');
+  }
+
+  function showError(msg) {
+    const toast = document.getElementById('error-toast');
+    toast.textContent = msg;
+    toast.classList.add('active');
+    setTimeout(() => toast.classList.remove('active'), 5000);
+  }
+</script>
+</body>
+</html>

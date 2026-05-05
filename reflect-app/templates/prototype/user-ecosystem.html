@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Ecosystem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 24px;
+    }
+    .phone-scroll::-webkit-scrollbar { display: none; }
+    .phone-scroll { scrollbar-width: none; }
+
+    /* ── Header ── */
+    .header {
+      padding: 48px 24px 0;
+      margin-bottom: 24px;
+    }
+
+    .header-overline {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-size: 36px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.37px;
+      line-height: 40px;
+      margin-bottom: 8px;
+    }
+
+    .header-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 22.75px;
+    }
+
+    /* ── Cards stack ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 0 24px;
+    }
+
+    /* ── Family card (large, clickable) ── */
+    .family-card {
+      display: block;
+      text-decoration: none;
+      background: rgba(254, 187, 206, 0.45);
+      border-radius: 32px;
+      box-shadow:
+        inset 0px 0.5px 1px 0px rgba(0,0,0,0.15),
+        inset 0px 1px 4px 0px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      height: 332px;
+    }
+
+    .family-title {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 32px;
+      z-index: 2;
+    }
+
+    /* circles positioned directly in family-card */
+    .family-card img.v-circle {
+      position: absolute;
+    }
+
+    /* bottom info area */
+    .family-bottom {
+      position: absolute;
+      left: 17px;
+      bottom: 24px;
+      z-index: 3;
+    }
+
+    .diversity-pill {
+      display: inline-block;
+      background: #fef7e5;
+      border-radius: 9999px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 16px;
+      box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+    }
+
+    .family-align {
+      font-size: 14px;
+      font-weight: 400;
+      color: #0a0a0a;
+      line-height: 20px;
+    }
+
+    /* ── Small group cards ── */
+    .group-card {
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      overflow: hidden;
+      position: relative;
+      height: 156px;
+      padding: 20px 24px;
+    }
+
+    .group-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 28px;
+    }
+
+    /* Overlapping circles row – parent is relative, 50px tall */
+    .circles-row {
+      position: absolute;
+      left: 30px;
+      top: 56px;
+      height: 50px;
+    }
+
+    .circles-row img {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+    }
+
+    .group-pill {
+      position: absolute;
+      left: 18px;
+      bottom: 20px;
+      background: #ffffff;
+      border-radius: 9999px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    /* ── Create New Ecosystem ── */
+    .create-card {
+      background: #ffe9e7;
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      height: 76px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .create-circle {
+      width: 50px;
+      height: 50px;
+      background: #ff7faa;
+      opacity: 0.7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .create-circle img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .create-label {
+      font-size: 16px;
+      font-weight: 400;
+      color: #0a0a0a;
+      line-height: 32px;
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252, 239, 222, 0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-icon { width: 24px; height: 24px; }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
+    .nav-label--active { color: #ff7faa; }
+  </style>
+</head>
+<body>
+<div class="phone">
+  <div class="phone-scroll">
+
+    <!-- Header -->
+    <div class="header">
+      <p class="header-overline">Ecosystem</p>
+      <h1 class="header-title">Your Digital Space</h1>
+      <p class="header-desc">A visual representation of the themes and topics in your feed, showing their size and connections.</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- ── Family card (large, clickable) ── -->
+      <a href="group-overview.html" class="family-card">
+        <span class="family-title">Family</span>
+
+        <!-- Venn circles – z-order matches Figma (later = on top) -->
+        <img class="v-circle" src="./assets/1cbd1cbb97f531e8fcc6625328564617568dd803.svg"
+             style="left:89px; top:89px; width:100px; height:100px;" alt="" />
+        <img class="v-circle" src="./assets/eb04e5a4d9c278cefcf9e0129dc70fc949ea15d1.svg"
+             style="left:123px; top:56px; width:100px; height:100px;" alt="" />
+        <img class="v-circle" src="./assets/3c46ed57cff31d3858d5f8589d207d77da35713c.svg"
+             style="left:123px; top:115px; width:100px; height:100px;" alt="" />
+        <img class="v-circle" src="./assets/e51a3db5fb0813a430d0b05838dae744b4fe1e15.svg"
+             style="left:152px; top:89px; width:100px; height:100px;" alt="" />
+        <!-- "You" center circle (50px parent + 8% inset bleed ≈ 58×66) -->
+        <img class="v-circle" src="./assets/15c9a705bd94828bacb5c7ba910c0b0b0f80a850.svg"
+             style="left:143px; top:110px; width:58px; height:66px;" alt="" />
+
+        <!-- Bottom info -->
+        <div class="family-bottom">
+          <div class="diversity-pill" id="family-pill">High diversity</div>
+          <p class="family-align" id="family-align">You align most with Mom</p>
+        </div>
+      </a>
+
+      <!-- ── Dynamically created ecosystems ── -->
+      <div id="created-ecosystems"></div>
+
+      <!-- ── Create New Ecosystem ── -->
+      <a href="create-ecosystem.html" class="create-card" style="text-decoration:none;">
+        <div class="create-circle">
+          <img src="./assets/1bfaa185046cddd29e5d665ce8d488152400c9c9.svg" alt="+" />
+        </div>
+        <span class="create-label">Create New Ecosystem</span>
+      </a>
+
+    </div><!-- /cards -->
+  </div><!-- /phone-scroll -->
+
+  <!-- Bottom nav — Ecosystem tab active -->
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/7b89d414e36ba6c45c8f6c3d33950e15c883f55f.svg" alt="Ecosystem" />
+      <span class="nav-label nav-label--active">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+</div>
+
+<script src="./js/ecosystem-helpers.js"></script>
+<script>
+  // ── Hydrate the Family card from first saved ecosystem ──
+  const ecosystems = JSON.parse(localStorage.getItem('reflect_ecosystems') || '[]');
+  if (ecosystems.length > 0) {
+    const first = ecosystems[0];
+    const pill  = document.getElementById('family-pill');
+    const align = document.getElementById('family-align');
+    if (pill)  pill.textContent  = EcoHelpers.diversityLabel(first);
+    if (align) {
+      const txt = EcoHelpers.alignText(first);
+      align.textContent = txt.slice(0, 120); // max ~50 words
+    }
+    // Update the family card title
+    const title = document.querySelector('.family-title');
+    if (title) title.textContent = first.name || EcoHelpers.generateName(first.blend_data);
+
+    // Set as active
+    localStorage.setItem('reflect_active_ecosystem', JSON.stringify(first));
+  }
+
+  // ── Render additional created ecosystems as small cards ──
+  function clean(n) { return (n||'').replace(/_Dummy/gi,'').trim(); }
+
+  function shortText(eco) {
+    const ba  = eco?.blend_data?.blend_analysis || eco?.blend_data || {};
+    const sum = ba.group_summary || ba.print_summary?.line1 || '';
+    const words = sum.split(' ').slice(0, 40).join(' ');
+    return words ? (words + (sum.split(' ').length > 40 ? '…' : '')) : EcoHelpers.diversityLabel(eco);
+  }
+
+  const container = document.getElementById('created-ecosystems');
+  if (container && ecosystems.length > 1) {
+    // The circle SVGs to reuse for small cards — cycle through original assets
+    const circleSets = [
+      ['./assets/5d355ede72f6b5cc75e0aec5065012f6d0f13e97.svg',
+       './assets/8ee650ebabef74ff01af27ee8e4b80165ef78ec7.svg',
+       './assets/f49a9ab863359bb12a2f8ce3cd9b425cc5cc6498.svg',
+       './assets/dc31104937cb65d041f5a914a0bca54dd8deb493.svg'],
+      ['./assets/5d355ede72f6b5cc75e0aec5065012f6d0f13e97.svg',
+       './assets/7d23e1e2fbe6852da357c5fe2f10b42460077a86.svg',
+       './assets/0d99341e768e4b3086c27048ee88bd19b1e16541.svg'],
+      ['./assets/5d355ede72f6b5cc75e0aec5065012f6d0f13e97.svg',
+       './assets/5e445d8e6b733d8b96ad1aae7b4b5e4ecb755148.svg'],
+    ];
+
+    container.innerHTML = ecosystems.slice(1).map((eco, idx) => {
+      const circles = circleSets[idx % circleSets.length];
+      const imgs    = circles.map((src, i) =>
+        `<img src="${src}" style="left:${i*29}px;" alt="" />`).join('');
+      const name    = eco.name || EcoHelpers.generateName(eco.blend_data);
+      const pill    = EcoHelpers.diversityLabel(eco);
+
+      return `
+        <div class="group-card" onclick="setActive('${eco.id}')" style="cursor:pointer;position:relative;">
+          <button onclick="deleteEco(event,'${eco.id}')" style="position:absolute;top:12px;right:12px;width:24px;height:24px;background:rgba(0,0,0,0.15);border:none;border-radius:50%;cursor:pointer;font-size:12px;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+          <a href="group-overview.html" style="text-decoration:none;display:block;">
+            <p class="group-title">${name}</p>
+            <div class="circles-row" style="position:relative;height:50px;margin-bottom:44px;">${imgs}</div>
+            <div class="group-pill">${pill}</div>
+          </a>
+        </div>`;
+    }).join('');
+  }
+
+  function setActive(id) {
+    const eco = ecosystems.find(e => e.id === id);
+    if (eco) localStorage.setItem('reflect_active_ecosystem', JSON.stringify(eco));
+  }
+
+  function deleteEco(e, id) {
+    e.preventDefault(); e.stopPropagation();
+    if (!confirm('Delete this ecosystem?')) return;
+    const updated = ecosystems.filter(x => x.id !== id);
+    localStorage.setItem('reflect_ecosystems', JSON.stringify(updated));
+    location.reload();
+  }
+</script>
+</body>
+</html>

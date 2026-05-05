@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Create Ecosystem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
+  <script src="./js/ecosystem-helpers.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family:'Inter',sans-serif; background:#e8e0d5; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; padding:24px 0 40px; }
+    .page { width:393px; height:844px; background:#fef7e5; border-radius:44px; box-shadow:0 0 0 1px rgba(0,0,0,0.12),0 8px 32px rgba(0,0,0,0.18); overflow:hidden; display:flex; flex-direction:column; position:relative; }
+    .page-scroll { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding-bottom:40px; scrollbar-width:none; }
+    .page-scroll::-webkit-scrollbar { display:none; }
+    .topbar { padding:52px 24px 0; margin-bottom:8px; }
+    .back-btn { display:inline-flex; align-items:center; gap:6px; text-decoration:none; font-size:14px; font-weight:500; color:#8f8f8f; }
+    .page-header { padding:0 24px; margin-bottom:20px; }
+    .page-title { font-size:28px; font-weight:600; color:#0a0a0a; margin-bottom:4px; }
+    .page-sub { font-size:13px; color:#8f8f8f; line-height:20px; }
+    .name-card { margin:0 21px 12px; background:rgba(255,255,255,0.5); border-radius:24px; padding:14px 18px; box-shadow:inset 0px 0.5px 1px rgba(0,0,0,0.12); }
+    .name-label { font-size:10px; font-weight:600; color:#8f8f8f; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:7px; }
+    .name-hint { font-size:10px; color:#8f8f8f; margin-top:5px; font-style:italic; }
+    .name-input { width:100%; height:38px; background:rgba(255,255,255,0.8); border:1.5px solid rgba(0,0,0,0.08); border-radius:10px; padding:0 12px; font-family:'Inter',sans-serif; font-size:14px; color:#0a0a0a; outline:none; }
+    .name-input:focus { border-color:#ff7faa; }
+    .name-input::placeholder { color:#bbb; }
+    .selected-bar { margin:0 21px 12px; background:rgba(255,127,170,0.08); border-radius:12px; padding:9px 14px; display:flex; align-items:center; justify-content:space-between; }
+    .selected-count { font-size:13px; color:#8f8f8f; }
+    .selected-count span { color:#ff7faa; font-weight:700; }
+    .section-label { font-size:10px; font-weight:600; color:#8f8f8f; letter-spacing:0.8px; text-transform:uppercase; padding:0 24px; margin-bottom:8px; }
+    .people-grid { display:flex; flex-direction:column; gap:7px; padding:0 21px; margin-bottom:16px; }
+    .person-row { background:rgba(255,255,255,0.5); border-radius:18px; padding:12px 14px; display:flex; align-items:center; gap:10px; cursor:pointer; border:2px solid transparent; transition:all 0.12s; box-shadow:inset 0px 0.5px 1px rgba(0,0,0,0.1); }
+    .person-row.selected { border-color:#ff7faa; background:rgba(255,127,170,0.06); }
+    .person-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:white; flex-shrink:0; }
+    .person-info { flex:1; min-width:0; }
+    .person-name { font-size:14px; font-weight:600; color:#0a0a0a; margin-bottom:1px; }
+    .person-desc { font-size:11px; color:#8f8f8f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .person-tag { padding:2px 8px; border-radius:9999px; font-size:10px; font-weight:500; }
+    .tag--family { background:rgba(255,127,170,0.12); color:#be185d; }
+    .tag--sample { background:rgba(167,139,250,0.12); color:#7c3aed; }
+    .tag--real   { background:rgba(134,239,172,0.15); color:#16a34a; }
+    .check-circle { width:20px; height:20px; border-radius:50%; border:2px solid rgba(0,0,0,0.12); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.12s; }
+    .person-row.selected .check-circle { background:#ff7faa; border-color:#ff7faa; }
+    .check-circle svg { display:none; }
+    .person-row.selected .check-circle svg { display:block; }
+    .create-btn { margin:0 21px; width:calc(100% - 42px); height:50px; background:#ff7faa; border:none; border-radius:9999px; font-family:'Inter',sans-serif; font-size:15px; font-weight:700; color:white; cursor:pointer; transition:opacity 0.2s; }
+    .create-btn:disabled { opacity:0.3; cursor:not-allowed; }
+    .loading-overlay { display:none; position:absolute; inset:0; background:rgba(254,247,229,0.94); border-radius:44px; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:50; }
+    .loading-overlay.active { display:flex; }
+    .loading-spinner { width:40px; height:40px; border:3px solid rgba(255,127,170,0.2); border-top-color:#ff7faa; border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading-text { font-size:15px; font-weight:600; color:#0a0a0a; text-align:center; }
+    .loading-sub { font-size:12px; color:#8f8f8f; text-align:center; max-width:220px; line-height:18px; }
+    .error-toast { display:none; position:absolute; bottom:80px; left:20px; right:20px; background:#fef2f2; border:1px solid rgba(248,113,113,0.3); border-radius:12px; padding:12px 14px; font-size:12px; color:#dc2626; z-index:60; }
+    .error-toast.active { display:block; }
+    .bottom-nav { flex-shrink:0; width:100%; height:68px; background:rgba(252,239,222,0.92); backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:space-between; padding:0 39px; }
+    .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; text-decoration:none; cursor:pointer; }
+    .nav-icon { width:24px; height:24px; }
+    .nav-label { font-size:12px; color:#8f8f8f; }
+    .nav-label--active { color:#ff7faa; }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+<div class="page">
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Building your ecosystem...</div>
+    <div class="loading-sub">Analysing and blending media patterns. This takes 20–40 seconds.</div>
+  </div>
+  <div class="error-toast" id="error-toast"></div>
+
+  <div class="page-scroll">
+    <div class="topbar"><a href="user-ecosystem.html" class="back-btn">← Back</a></div>
+    <div class="page-header">
+      <h1 class="page-title">New Ecosystem</h1>
+      <p class="page-sub">Select 2–6 people to create your group.</p>
+    </div>
+
+    <div class="name-card">
+      <p class="name-label">Ecosystem Name</p>
+      <input class="name-input" id="eco-name" type="text" placeholder="Leave blank to auto-generate…" maxlength="30" />
+      <p class="name-hint">A name will be generated from the blend report if left blank</p>
+    </div>
+
+    <div class="selected-bar">
+      <span class="selected-count"><span id="sel-count">0</span> people selected</span>
+      <span style="font-size:11px;color:#8f8f8f;">Select 2–6</span>
+    </div>
+
+    <p class="section-label">Family</p>
+    <div class="people-grid" id="family-list"></div>
+
+    <p class="section-label">Sample Profiles</p>
+    <div class="people-grid" id="sample-list"></div>
+
+    <p class="section-label" id="real-label" style="display:none">Your Reports</p>
+    <div class="people-grid" id="real-list"></div>
+
+    <button class="create-btn" id="create-btn" onclick="createEcosystem()" disabled>
+      ✦ Create Ecosystem
+    </button>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/7b89d414e36ba6c45c8f6c3d33950e15c883f55f.svg" alt="Ecosystem" />
+      <span class="nav-label nav-label--active">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+</div>
+
+<script>
+  const FAMILY = [
+    { key:'mum',     name:'Mum',     desc:'Wellness & family, morning consumer',    color: EcoHelpers.colorFor('mum',0) },
+    { key:'dad',     name:'Dad',     desc:'Sport, tech & finance, evening viewer',   color: EcoHelpers.colorFor('dad',1) },
+    { key:'alex',    name:'Alex',    desc:'Pop culture & gaming, late-night',         color: EcoHelpers.colorFor('alex',2) },
+    { key:'grandma', name:'Grandma', desc:'Baking, crafts & gardening, afternoons',  color: EcoHelpers.colorFor('grandma',3) },
+  ];
+  const SAMPLES = [
+    { key:'marcus', name:'Marcus', desc:'Radicalized pipeline, late-night',     color: EcoHelpers.colorFor('marcus',0) },
+    { key:'emma',   name:'Emma',   desc:'Tradwife aesthetic, morning consumer',  color: EcoHelpers.colorFor('emma',1) },
+    { key:'kai',    name:'Kai',    desc:'Culture nerd, evening & late-night',    color: EcoHelpers.colorFor('kai',2) },
+    { key:'zoe',    name:'Zoe',    desc:'Conscious consumer, early morning',     color: EcoHelpers.colorFor('zoe',3) },
+  ];
+
+  const selected = new Set();
+
+  function rowHTML(p, tagClass, tagLabel) {
+    return `
+      <div class="person-row" id="row-${p.key}" onclick="toggle('${p.key}')">
+        <div class="person-avatar" style="background:${p.color}">${p.name[0]}</div>
+        <div class="person-info">
+          <p class="person-name">${p.name}</p>
+          <p class="person-desc">${p.desc}</p>
+        </div>
+        <span class="person-tag ${tagClass}">${tagLabel}</span>
+        <div class="check-circle">
+          <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+            <path d="M1 4.5l3 3L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('family-list').innerHTML = FAMILY.map(p => rowHTML(p,'tag--family','Family')).join('');
+  document.getElementById('sample-list').innerHTML = SAMPLES.map(p => rowHTML(p,'tag--sample','Sample')).join('');
+
+  // Real reports
+  try {
+    const allReports = JSON.parse(localStorage.getItem('reflect_reports') || '[]');
+    const real = allReports.filter(r => !r.is_dummy);
+    if (real.length) {
+      document.getElementById('real-label').style.display = 'block';
+      document.getElementById('real-list').innerHTML = real.map(r => {
+        const p = { key:`real_${r.report_id}`, name:r.report_id, desc:'Real TikTok data', color:'#ff7faa' };
+        return rowHTML(p,'tag--real','Real');
+      }).join('');
+    }
+  } catch(e) {}
+
+  function toggle(key) {
+    const row = document.getElementById(`row-${key}`);
+    if (!row) return;
+    if (selected.has(key)) { selected.delete(key); row.classList.remove('selected'); }
+    else {
+      if (selected.size >= 6) { showError('Maximum 6 people per ecosystem.'); return; }
+      selected.add(key); row.classList.add('selected');
+    }
+    document.getElementById('sel-count').textContent = selected.size;
+    document.getElementById('create-btn').disabled   = selected.size < 2;
+  }
+
+  async function createEcosystem() {
+    if (selected.size < 2) return;
+    showLoading('Loading profiles...');
+
+    try {
+      const reports = [];
+      const savedReports = JSON.parse(localStorage.getItem('reflect_reports') || '[]');
+
+      for (const key of selected) {
+        if (key.startsWith('real_')) {
+          const reportId = key.replace('real_','');
+          const saved = savedReports.find(r => r.report_id === reportId);
+          if (saved) reports.push(saved);
+        } else {
+          document.getElementById('loading-text').textContent = `Loading ${key}...`;
+          const res = await fetch(`/dummy?persona=${key}`);
+          if (!res.ok) throw new Error(`Failed to load ${key}`);
+          reports.push(await res.json());
+        }
+      }
+
+      document.getElementById('loading-text').textContent = 'Blending media patterns...';
+
+      const blendRes = await fetch('/blend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reports })
+      });
+      if (!blendRes.ok) throw new Error('Blend failed');
+      const blend = await blendRes.json();
+
+      // Auto-generate name from blend data if user left it blank
+      const manualName = document.getElementById('eco-name').value.trim();
+      const autoName   = EcoHelpers.generateName(blend);
+      const finalName  = manualName || autoName;
+
+      const ecosystems = JSON.parse(localStorage.getItem('reflect_ecosystems') || '[]');
+      const newEco = {
+        id:         Date.now().toString(),
+        name:       finalName,
+        members:    blend.members || reports.map(r => r.report_id),
+        reports,
+        blend_data: blend,
+        created_at: new Date().toISOString()
+      };
+      ecosystems.unshift(newEco);
+      localStorage.setItem('reflect_ecosystems', JSON.stringify(ecosystems));
+      localStorage.setItem('reflect_active_ecosystem', JSON.stringify(newEco));
+
+      document.getElementById('loading-text').textContent = `"${finalName}" ready!`;
+      setTimeout(() => { window.location.href = 'user-ecosystem.html'; }, 600);
+
+    } catch(err) {
+      hideLoading();
+      showError(err.message || 'Something went wrong. Please try again.');
+    }
+  }
+
+  function showLoading(msg) { document.getElementById('loading-text').textContent = msg; document.getElementById('loading-overlay').classList.add('active'); }
+  function hideLoading()    { document.getElementById('loading-overlay').classList.remove('active'); }
+  function showError(msg)   { const t=document.getElementById('error-toast'); t.textContent=msg; t.classList.add('active'); setTimeout(()=>t.classList.remove('active'),4000); }
+</script>
+</body>
+</html>

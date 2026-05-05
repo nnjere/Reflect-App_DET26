@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Group Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
+  <script src="./js/ecosystem-helpers.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .page {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 32px;
+    }
+    .page-scroll::-webkit-scrollbar { display: none; }
+    .page-scroll { scrollbar-width: none; }
+
+    /* ── Topbar ── */
+    .topbar { position: relative; padding: 52px 24px 0; margin-bottom: 16px; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 14px; font-weight: 500; color: #8f8f8f; }
+    .topbar-deco { position: absolute; top: 38px; right: 4px; width: 53px; height: 51px; }
+
+    /* ── Page header ── */
+    .page-header { padding: 0 24px; margin-bottom: 16px; }
+    .page-title { font-size: 30px; font-weight: 600; color: #0a0a0a; line-height: 36px; }
+    .page-subtitle { font-size: 14px; color: #8f8f8f; line-height: 20px; margin-top: 4px; }
+
+    /* ── Filter tabs ── */
+    .filter-tabs { display: flex; gap: 8px; padding: 0 24px 16px; overflow-x: auto; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tabs { scrollbar-width: none; }
+    .filter-tab {
+      flex-shrink: 0;
+      height: 36px;
+      border-radius: 9999px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      line-height: 36px;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.2);
+      color: #8f8f8f;
+    }
+    .filter-tab--active { background: rgba(255,255,255,0.6); color: #0a0a0a; box-shadow: 0px 1px 3px rgba(0,0,0,0.1); }
+
+    /* ── Viz card ── */
+    .viz-card {
+      margin: 0 21px 16px;
+      height: 332px;
+      border-radius: 32px;
+      background: rgba(254,187,206,0.45);
+      box-shadow: inset 0px 1px 4px 0px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .viz-venn {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -58%);
+    }
+
+    /* member labels */
+    .viz-label {
+      position: absolute;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .viz-info-strip {
+      position: absolute;
+      left: -24px; right: -24px;
+      top: 228px;
+      height: 106px;
+      background: #fef7e5;
+      border-radius: 9999px;
+      box-shadow: 0px 1px 4px rgba(0,0,0,0.1);
+      padding: 18px 0 0 52px;
+    }
+    .viz-info-line { font-size: 14px; color: #8f8f8f; line-height: 20px; }
+
+    /* ── Lower cards ── */
+    .lower-cards { display: flex; flex-direction: column; gap: 24px; padding: 0 21px; }
+
+    .info-card {
+      background: rgba(255,255,255,0.4);
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 24px;
+    }
+
+    .info-card--white { background: rgba(255,255,255,0.5); }
+    .info-card--cream { background: rgba(254,247,229,0.7); }
+
+    .section-label { font-size: 12px; font-weight: 500; color: #8f8f8f; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 16px; }
+
+    /* Legend */
+    .legend-rows { display: flex; flex-direction: column; gap: 12px; }
+    .legend-row { display: flex; align-items: center; gap: 12px; }
+    .legend-dot-lg { width: 32px; height: 32px; border-radius: 50%; opacity: 0.7; flex-shrink: 0; }
+    .legend-dots-sm { display: flex; gap: 4px; }
+    .legend-dot-sm { width: 24px; height: 24px; border-radius: 50%; opacity: 0.7; }
+    .legend-text-title { font-size: 14px; font-weight: 500; color: #0a0a0a; }
+    .legend-text-sub { font-size: 12px; color: #8f8f8f; }
+
+    /* Theme tags */
+    .theme-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .theme-tag {
+      background: rgba(255,127,170,0.15);
+      border-radius: 9999px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #262626;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+    }
+
+    /* Bullet list */
+    .bullet-list { display: flex; flex-direction: column; gap: 12px; }
+    .bullet-item { display: flex; align-items: flex-start; gap: 12px; }
+    .bullet-dot { width: 6px; height: 6px; border-radius: 50%; background: #8f8f8f; flex-shrink: 0; margin-top: 8px; }
+    .bullet-text { font-size: 14px; color: #262626; line-height: 22px; }
+
+    /* Member comparison cards */
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .comparison-card { background: rgba(255,255,255,0.5); border-radius: 16px; padding: 14px; }
+    .comparison-names { font-size: 12px; font-weight: 600; color: #0a0a0a; margin-bottom: 6px; }
+    .overlap-track { height: 6px; background: rgba(0,0,0,0.08); border-radius: 9999px; overflow: hidden; margin-bottom: 4px; }
+    .overlap-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg,#ff7faa,#c084fc); }
+    .overlap-score { font-size: 11px; color: #8f8f8f; }
+    .comparison-diff { font-size: 11px; color: #8f8f8f; margin-top: 5px; font-style: italic; line-height: 15px; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252,239,222,0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+    }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; cursor: pointer; }
+    .nav-icon { width: 24px; height: 24px; }
+    .nav-label { font-size: 12px; color: #8f8f8f; }
+    .nav-label--active { color: #ff7faa; }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+<div class="page">
+  <div class="page-scroll">
+
+    <div class="topbar">
+      <a href="user-ecosystem.html" class="back-btn">← Back</a>
+    </div>
+
+    <div class="page-header">
+      <h1 class="page-title" id="eco-name">Ecosystem</h1>
+      <p class="page-subtitle" id="eco-subtitle">Loading...</p>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+      <a href="group-overview.html"       class="filter-tab filter-tab--active">All</a>
+      <a href="group-entertainment.html"  class="filter-tab">Entertainment</a>
+      <a href="group-wellness.html"       class="filter-tab">Wellness</a>
+      <span class="filter-tab">Politics</span>
+      <span class="filter-tab">Education</span>
+    </div>
+
+    <!-- Viz card -->
+    <div class="viz-card" id="viz-card">
+      <div class="viz-venn" id="viz-venn"></div>
+      <div class="viz-info-strip">
+        <p class="viz-info-line" id="viz-line1"></p>
+        <p class="viz-info-line" id="viz-line2"></p>
+      </div>
+    </div>
+
+    <!-- Lower cards -->
+    <div class="lower-cards">
+
+      <!-- Legend -->
+      <div class="info-card">
+        <p class="section-label">Legend</p>
+        <div class="legend-rows">
+          <div class="legend-row">
+            <div class="legend-dot-lg" id="legend-dot" style="background:#ff7faa"></div>
+            <div>
+              <p class="legend-text-title">Bubble Size</p>
+              <p class="legend-text-sub">Represents time spent and engagement</p>
+            </div>
+          </div>
+          <div class="legend-row">
+            <div class="legend-dots-sm" id="member-legend"></div>
+            <div>
+              <p class="legend-text-title">Colors</p>
+              <p class="legend-text-sub">Different members</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Member comparisons -->
+      <div class="info-card info-card--white" id="comparisons-card" style="display:none">
+        <p class="section-label">Member Overlap</p>
+        <div class="comparison-grid" id="comparisons-grid"></div>
+      </div>
+
+      <!-- Key themes -->
+      <div class="info-card info-card--white">
+        <p class="section-label">Key Common Themes This Week</p>
+        <div class="theme-tags" id="key-themes"></div>
+      </div>
+
+      <!-- Group summary -->
+      <div class="info-card info-card--white" id="summary-card" style="display:none">
+        <p class="section-label">Group Summary</p>
+        <p class="bullet-text" id="group-summary"></p>
+      </div>
+
+      <!-- How determined -->
+      <div class="info-card info-card--cream">
+        <p class="section-label">How This Is Determined</p>
+        <div class="bullet-list">
+          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Number of common hashtags, communities, and themes identified</p></div>
+          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Topic overlap and message similarity across posts</p></div>
+          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Community clustering and interconnected networks</p></div>
+          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Frequency of reinforcing vs. contrasting viewpoints</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/7b89d414e36ba6c45c8f6c3d33950e15c883f55f.svg" alt="Ecosystem" />
+      <span class="nav-label nav-label--active">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+</div>
+
+<script>
+  const eco = EcoHelpers.getActiveEco();
+
+  if (!eco) {
+    document.getElementById('eco-name').textContent = 'No ecosystem';
+    document.getElementById('eco-subtitle').textContent = 'Create one first';
+  } else {
+    const ba      = EcoHelpers.getBlend(eco);
+    const members = eco.members || [];
+    const name    = eco.name || EcoHelpers.generateName(eco.blend_data);
+
+    // Header
+    document.getElementById('eco-name').textContent     = name;
+    document.getElementById('eco-subtitle').textContent = `${members.length} people in this ecosystem`;
+
+    // Venn
+    document.getElementById('viz-venn').innerHTML = EcoHelpers.vennSVG(members, 280, 240);
+
+    // Info strip
+    const align = EcoHelpers.alignText(eco);
+    const fp    = ba.furthest_pair?.members;
+    document.getElementById('viz-line1').textContent = align || `${members.length} members`;
+    document.getElementById('viz-line2').textContent = fp?.length >= 2
+      ? `Most different: ${EcoHelpers.clean(fp[0])} & ${EcoHelpers.clean(fp[1])}`
+      : EcoHelpers.diversityLabel(eco);
+
+    // Member legend dots
+    const legendDots = document.getElementById('member-legend');
+    legendDots.innerHTML = members.slice(0,4).map((m,i) =>
+      `<div class="legend-dot-sm" style="background:${EcoHelpers.colorFor(m,i)}"></div>`
+    ).join('');
+
+    // Key themes
+    const themes = ba.key_common_themes || [];
+    document.getElementById('key-themes').innerHTML = themes.length
+      ? themes.map(t => `<span class="theme-tag">${t}</span>`).join('')
+      : '<span class="theme-tag">Loading...</span>';
+
+    // Member comparisons
+    const comps = ba.member_comparisons || [];
+    if (comps.length) {
+      document.getElementById('comparisons-card').style.display = 'block';
+      document.getElementById('comparisons-grid').innerHTML = comps.slice(0,4).map(c => `
+        <div class="comparison-card">
+          <p class="comparison-names">${EcoHelpers.clean(c.member_a)} × ${EcoHelpers.clean(c.member_b)}</p>
+          <div class="overlap-track">
+            <div class="overlap-fill" style="width:${c.overlap_score||0}%"></div>
+          </div>
+          <p class="overlap-score">${c.overlap_score||0}% overlap</p>
+          <p class="comparison-diff">${c.key_difference||''}</p>
+        </div>`).join('');
+    }
+
+    // Group summary
+    if (ba.group_summary) {
+      document.getElementById('summary-card').style.display = 'block';
+      document.getElementById('group-summary').textContent = ba.group_summary;
+    }
+  }
+</script>
+</body>
+</html>

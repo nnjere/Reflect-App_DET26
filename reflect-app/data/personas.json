@@ -1,25 +1,43 @@
 {
   "marcus": {
-    "user": {"display_name": "Marcus_Dummy"},
+    "user": {
+      "display_name": "Marcus_Dummy"
+    },
     "metadata": {
       "watch_count": 2847,
       "like_count": 412,
       "saved_count": 23,
       "region": "US",
-      "collections": ["Gains", "Mindset", "Goals"],
+      "collections": [
+        "Gains",
+        "Mindset",
+        "Goals"
+      ],
       "peak_hours": "late_night",
       "avg_session_minutes": 67,
       "sessions_per_day": 3,
       "like_rate": 14,
       "save_rate": 0.8,
       "top_searches": [
-        "andrew tate", "looksmaxxing", "hunter eyes",
-        "jaw exercises", "red pill", "sigma male",
-        "75 hard challenge", "monk mode", "rizz",
-        "how to be alpha", "gymtok", "testosterone",
-        "cold shower benefits", "stoicism men",
-        "how to get girls", "masculinity", "bone smashing",
-        "mewing before after", "body count",
+        "andrew tate",
+        "looksmaxxing",
+        "hunter eyes",
+        "jaw exercises",
+        "red pill",
+        "sigma male",
+        "75 hard challenge",
+        "monk mode",
+        "rizz",
+        "how to be alpha",
+        "gymtok",
+        "testosterone",
+        "cold shower benefits",
+        "stoicism men",
+        "how to get girls",
+        "masculinity",
+        "bone smashing",
+        "mewing before after",
+        "body count",
         "fresh and fit podcast"
       ],
       "watch_pattern": {
@@ -31,62 +49,160 @@
       }
     },
     "videos": [
-      {"title": "Why weak men are destroying society",
-       "hashtag_names": ["redpill", "sigma", "masculinity"],
-       "watch_time": 58, "duration": 60, "creator": "@alphamindset"},
-      {"title": "Looksmaxxing routine that actually works",
-       "hashtag_names": ["looksmaxxing", "glow up", "mewing"],
-       "watch_time": 55, "duration": 57, "creator": "@looksmaxbro"},
-      {"title": "75 Hard day 30 transformation",
-       "hashtag_names": ["75hard", "discipline", "gymtok"],
-       "watch_time": 60, "duration": 60, "creator": "@hardmode_life"},
-      {"title": "Why Andrew Tate is right about women",
-       "hashtag_names": ["tate", "redpill", "truth"],
-       "watch_time": 57, "duration": 58, "creator": "@alphamindset"},
-      {"title": "Hunter eyes vs prey eyes explained",
-       "hashtag_names": ["looksmaxxing", "hunteryes", "mewing"],
-       "watch_time": 54, "duration": 55, "creator": "@looksmaxbro"},
-      {"title": "Monk mode 90 days no results",
-       "hashtag_names": ["monkmode", "discipline", "sigma"],
-       "watch_time": 59, "duration": 60, "creator": "@hardmode_life"},
-      {"title": "Women only respect high value men",
-       "hashtag_names": ["redpill", "hypergamy", "truth"],
-       "watch_time": 56, "duration": 58, "creator": "@alphamindset"},
-      {"title": "Jaw surgery vs mewing results",
-       "hashtag_names": ["looksmaxxing", "jawline", "mewing"],
-       "watch_time": 60, "duration": 60, "creator": "@looksmaxbro"},
-      {"title": "Cold showers every day for 30 days",
-       "hashtag_names": ["75hard", "discipline", "testosterone"],
-       "watch_time": 55, "duration": 57, "creator": "@hardmode_life"},
-      {"title": "The matrix doesn't want you to know this",
-       "hashtag_names": ["redpill", "wakeup", "sigma"],
-       "watch_time": 58, "duration": 60, "creator": "@alphamindset"}
+      {
+        "title": "Why weak men are destroying society",
+        "hashtag_names": [
+          "redpill",
+          "sigma",
+          "masculinity"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@alphamindset"
+      },
+      {
+        "title": "Looksmaxxing routine that actually works",
+        "hashtag_names": [
+          "looksmaxxing",
+          "glow up",
+          "mewing"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@looksmaxbro"
+      },
+      {
+        "title": "75 Hard day 30 transformation",
+        "hashtag_names": [
+          "75hard",
+          "discipline",
+          "gymtok"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@hardmode_life"
+      },
+      {
+        "title": "Why Andrew Tate is right about women",
+        "hashtag_names": [
+          "tate",
+          "redpill",
+          "truth"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@alphamindset"
+      },
+      {
+        "title": "Hunter eyes vs prey eyes explained",
+        "hashtag_names": [
+          "looksmaxxing",
+          "hunteryes",
+          "mewing"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@looksmaxbro"
+      },
+      {
+        "title": "Monk mode 90 days no results",
+        "hashtag_names": [
+          "monkmode",
+          "discipline",
+          "sigma"
+        ],
+        "watch_time": 59,
+        "duration": 60,
+        "creator": "@hardmode_life"
+      },
+      {
+        "title": "Women only respect high value men",
+        "hashtag_names": [
+          "redpill",
+          "hypergamy",
+          "truth"
+        ],
+        "watch_time": 56,
+        "duration": 58,
+        "creator": "@alphamindset"
+      },
+      {
+        "title": "Jaw surgery vs mewing results",
+        "hashtag_names": [
+          "looksmaxxing",
+          "jawline",
+          "mewing"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@looksmaxbro"
+      },
+      {
+        "title": "Cold showers every day for 30 days",
+        "hashtag_names": [
+          "75hard",
+          "discipline",
+          "testosterone"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@hardmode_life"
+      },
+      {
+        "title": "The matrix doesnt want you to know this",
+        "hashtag_names": [
+          "redpill",
+          "wakeup",
+          "sigma"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@alphamindset"
+      }
     ]
   },
   "emma": {
-    "user": {"display_name": "Emma_Dummy"},
+    "user": {
+      "display_name": "Emma_Dummy"
+    },
     "metadata": {
       "watch_count": 3124,
       "like_count": 891,
       "saved_count": 445,
       "region": "US",
-      "collections": ["Recipes", "Home Inspo", "Slow Living", "Aesthetic", "Divine Feminine"],
+      "collections": [
+        "Recipes",
+        "Home Inspo",
+        "Slow Living",
+        "Aesthetic",
+        "Divine Feminine"
+      ],
       "peak_hours": "morning",
       "avg_session_minutes": 28,
       "sessions_per_day": 4,
       "like_rate": 28,
       "save_rate": 14,
       "top_searches": [
-        "nara smith recipes", "from scratch cooking",
-        "slow living aesthetic", "cottagecore",
-        "sourdough starter", "divine femininity",
-        "soft life", "clean girl aesthetic",
-        "homemaking tips", "tradwife",
-        "Emily Mariko", "that girl morning routine",
-        "linen aesthetic", "farmers market haul",
-        "handmade pasta", "domestic aesthetic",
-        "feminine energy", "soft girl era",
-        "vintage homemaking", "flower arranging"
+        "nara smith recipes",
+        "from scratch cooking",
+        "slow living aesthetic",
+        "cottagecore",
+        "sourdough starter",
+        "divine femininity",
+        "soft life",
+        "clean girl aesthetic",
+        "homemaking tips",
+        "tradwife",
+        "Emily Mariko",
+        "that girl morning routine",
+        "linen aesthetic",
+        "farmers market haul",
+        "handmade pasta",
+        "domestic aesthetic",
+        "feminine energy",
+        "soft girl era",
+        "vintage homemaking",
+        "flower arranging"
       ],
       "watch_pattern": {
         "early_morning": 35,
@@ -97,46 +213,134 @@
       }
     },
     "videos": [
-      {"title": "Making croissants from scratch for my family",
-       "hashtag_names": ["slowliving", "fromscatch", "homemaking"],
-       "watch_time": 62, "duration": 65, "creator": "@naraaziza"},
-      {"title": "My soft morning routine as a stay at home girlfriend",
-       "hashtag_names": ["softlife", "morningroutine", "divinefeminine"],
-       "watch_time": 58, "duration": 60, "creator": "@thatgirllifestyle"},
-      {"title": "Cottagecore aesthetic autumn lookbook",
-       "hashtag_names": ["cottagecore", "aesthetic", "slowliving"],
-       "watch_time": 55, "duration": 57, "creator": "@linen.and.lace"},
-      {"title": "Sourdough bread I made with my starter Bella",
-       "hashtag_names": ["sourdough", "fromscatch", "homemaking"],
-       "watch_time": 64, "duration": 65, "creator": "@naraaziza"},
-      {"title": "How I keep my home clean and peaceful",
-       "hashtag_names": ["homemaking", "cleanwithme", "aesthetic"],
-       "watch_time": 57, "duration": 60, "creator": "@domesticbliss"},
-      {"title": "Divine feminine energy morning ritual",
-       "hashtag_names": ["divinefeminine", "softlife", "feminine"],
-       "watch_time": 53, "duration": 55, "creator": "@thatgirllifestyle"},
-      {"title": "Farmers market haul and what I made",
-       "hashtag_names": ["farmersmarket", "fromscatch", "slowliving"],
-       "watch_time": 60, "duration": 62, "creator": "@linen.and.lace"},
-      {"title": "Handmade pasta with truffle cream sauce",
-       "hashtag_names": ["fromscatch", "pasta", "homemaking"],
-       "watch_time": 65, "duration": 67, "creator": "@naraaziza"},
-      {"title": "My linen aesthetic capsule wardrobe",
-       "hashtag_names": ["aesthetic", "capsulewardrobe", "softlife"],
-       "watch_time": 50, "duration": 52, "creator": "@domesticbliss"},
-      {"title": "Why I chose slow living over my career",
-       "hashtag_names": ["slowliving", "divinefeminine", "tradwife"],
-       "watch_time": 58, "duration": 60, "creator": "@thatgirllifestyle"}
+      {
+        "title": "Making croissants from scratch for my family",
+        "hashtag_names": [
+          "slowliving",
+          "fromscratch",
+          "homemaking"
+        ],
+        "watch_time": 62,
+        "duration": 65,
+        "creator": "@naraaziza"
+      },
+      {
+        "title": "My soft morning routine as a stay at home girlfriend",
+        "hashtag_names": [
+          "softlife",
+          "morningroutine",
+          "divinefeminine"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@thatgirllifestyle"
+      },
+      {
+        "title": "Cottagecore aesthetic autumn lookbook",
+        "hashtag_names": [
+          "cottagecore",
+          "aesthetic",
+          "slowliving"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@linen.and.lace"
+      },
+      {
+        "title": "Sourdough bread I made with my starter Bella",
+        "hashtag_names": [
+          "sourdough",
+          "fromscratch",
+          "homemaking"
+        ],
+        "watch_time": 64,
+        "duration": 65,
+        "creator": "@naraaziza"
+      },
+      {
+        "title": "How I keep my home clean and peaceful",
+        "hashtag_names": [
+          "homemaking",
+          "cleanwithme",
+          "aesthetic"
+        ],
+        "watch_time": 57,
+        "duration": 60,
+        "creator": "@domesticbliss"
+      },
+      {
+        "title": "Divine feminine energy morning ritual",
+        "hashtag_names": [
+          "divinefeminine",
+          "softlife",
+          "feminine"
+        ],
+        "watch_time": 53,
+        "duration": 55,
+        "creator": "@thatgirllifestyle"
+      },
+      {
+        "title": "Farmers market haul and what I made",
+        "hashtag_names": [
+          "farmersmarket",
+          "fromscratch",
+          "slowliving"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@linen.and.lace"
+      },
+      {
+        "title": "Handmade pasta with truffle cream sauce",
+        "hashtag_names": [
+          "fromscratch",
+          "pasta",
+          "homemaking"
+        ],
+        "watch_time": 65,
+        "duration": 67,
+        "creator": "@naraaziza"
+      },
+      {
+        "title": "My linen aesthetic capsule wardrobe",
+        "hashtag_names": [
+          "aesthetic",
+          "capsulewardrobe",
+          "softlife"
+        ],
+        "watch_time": 50,
+        "duration": 52,
+        "creator": "@domesticbliss"
+      },
+      {
+        "title": "Why I chose slow living over my career",
+        "hashtag_names": [
+          "slowliving",
+          "divinefeminine",
+          "tradwife"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@thatgirllifestyle"
+      }
     ]
   },
   "kai": {
-    "user": {"display_name": "Kai_Dummy"},
+    "user": {
+      "display_name": "Kai_Dummy"
+    },
     "metadata": {
       "watch_count": 4231,
       "like_count": 2456,
       "saved_count": 312,
       "region": "US",
-      "collections": ["Must Watch", "Gaming Clips", "Hot Takes", "Figurine Inspo", "Tier Lists"],
+      "collections": [
+        "Must Watch",
+        "Gaming Clips",
+        "Hot Takes",
+        "Figurine Inspo",
+        "Tier Lists"
+      ],
       "peak_hours": "evening",
       "avg_session_minutes": 52,
       "sessions_per_day": 5,
@@ -173,46 +377,133 @@
       }
     },
     "videos": [
-      {"title": "Why Elden Ring is the greatest game ever made",
-       "hashtag_names": ["gaming", "eldenring", "fromsoft"],
-       "watch_time": 58, "duration": 60, "creator": "@dunkey"},
-      {"title": "Marvel Phase 5 tier list ranking every film",
-       "hashtag_names": ["marvel", "tierlist", "mcu"],
-       "watch_time": 55, "duration": 57, "creator": "@comicexplained"},
-      {"title": "My entire anime figurine collection 2024",
-       "hashtag_names": ["figurines", "anime", "collection"],
-       "watch_time": 62, "duration": 65, "creator": "@nerdcave"},
-      {"title": "House of the Dragon episode 6 breakdown",
-       "hashtag_names": ["houseofdragon", "gameofthrones", "breakdown"],
-       "watch_time": 57, "duration": 58, "creator": "@altshiftx"},
-      {"title": "xQc reacts to gaming fails compilation",
-       "hashtag_names": ["twitch", "xqc", "gaming"],
-       "watch_time": 60, "duration": 60, "creator": "@xqcclips"},
-      {"title": "Baldurs Gate 3 best build for beginners",
-       "hashtag_names": ["baldursgate3", "gaming", "rpg"],
-       "watch_time": 54, "duration": 55, "creator": "@dunkey"},
-      {"title": "Every Pokemon card I pulled this month",
-       "hashtag_names": ["pokemon", "tcg", "packopening"],
-       "watch_time": 59, "duration": 60, "creator": "@nerdcave"},
-      {"title": "The Last of Us show vs game — honest review",
-       "hashtag_names": ["thelastofus", "gaming", "review"],
-       "watch_time": 56, "duration": 58, "creator": "@altshiftx"},
-      {"title": "Critical Role campaign 3 lore explained",
-       "hashtag_names": ["criticalrole", "dnd", "lore"],
-       "watch_time": 60, "duration": 62, "creator": "@comicexplained"},
-      {"title": "One Piece manga vs anime — which is better",
-       "hashtag_names": ["onepiece", "anime", "manga"],
-       "watch_time": 58, "duration": 60, "creator": "@nerdcave"}
+      {
+        "title": "Why Elden Ring is the greatest game ever made",
+        "hashtag_names": [
+          "gaming",
+          "eldenring",
+          "fromsoft"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@dunkey"
+      },
+      {
+        "title": "Marvel Phase 5 tier list ranking every film",
+        "hashtag_names": [
+          "marvel",
+          "tierlist",
+          "mcu"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@comicexplained"
+      },
+      {
+        "title": "My entire anime figurine collection 2024",
+        "hashtag_names": [
+          "figurines",
+          "anime",
+          "collection"
+        ],
+        "watch_time": 62,
+        "duration": 65,
+        "creator": "@nerdcave"
+      },
+      {
+        "title": "House of the Dragon episode 6 breakdown",
+        "hashtag_names": [
+          "houseofdragon",
+          "gameofthrones",
+          "breakdown"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@altshiftx"
+      },
+      {
+        "title": "xQc reacts to gaming fails compilation",
+        "hashtag_names": [
+          "twitch",
+          "xqc",
+          "gaming"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@xqcclips"
+      },
+      {
+        "title": "Baldurs Gate 3 best build for beginners",
+        "hashtag_names": [
+          "baldursgate3",
+          "gaming",
+          "rpg"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@dunkey"
+      },
+      {
+        "title": "Every Pokemon card I pulled this month",
+        "hashtag_names": [
+          "pokemon",
+          "tcg",
+          "packopening"
+        ],
+        "watch_time": 59,
+        "duration": 60,
+        "creator": "@nerdcave"
+      },
+      {
+        "title": "The Last of Us show vs game honest review",
+        "hashtag_names": [
+          "thelastofus",
+          "gaming",
+          "review"
+        ],
+        "watch_time": 56,
+        "duration": 58,
+        "creator": "@altshiftx"
+      },
+      {
+        "title": "Critical Role campaign 3 lore explained",
+        "hashtag_names": [
+          "criticalrole",
+          "dnd",
+          "lore"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@comicexplained"
+      },
+      {
+        "title": "One Piece manga vs anime which is better",
+        "hashtag_names": [
+          "onepiece",
+          "anime",
+          "manga"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@nerdcave"
+      }
     ]
   },
   "zoe": {
-    "user": {"display_name": "Zoe_Dummy"},
+    "user": {
+      "display_name": "Zoe_Dummy"
+    },
     "metadata": {
       "watch_count": 2156,
       "like_count": 287,
       "saved_count": 198,
       "region": "US",
-      "collections": ["Learn This", "Try This", "Save for Later", "Important"],
+      "collections": [
+        "Learn This",
+        "Try This",
+        "Save for Later",
+        "Important"
+      ],
       "peak_hours": "morning",
       "avg_session_minutes": 14,
       "sessions_per_day": 2,
@@ -249,36 +540,747 @@
       }
     },
     "videos": [
-      {"title": "How to spot misinformation online",
-       "hashtag_names": ["medialiteracy", "criticalthinking", "education"],
-       "watch_time": 58, "duration": 60, "creator": "@factcheck"},
-      {"title": "Beginner guide to index fund investing",
-       "hashtag_names": ["financialliteracy", "investing", "education"],
-       "watch_time": 55, "duration": 57, "creator": "@moneywithkatie"},
-      {"title": "Climate solutions that actually work",
-       "hashtag_names": ["climate", "solutions", "science"],
-       "watch_time": 62, "duration": 65, "creator": "@climatetown"},
-      {"title": "Learn Spanish in 10 minutes a day",
-       "hashtag_names": ["learnspanish", "language", "education"],
-       "watch_time": 57, "duration": 58, "creator": "@spanishpod101"},
-      {"title": "Setting healthy boundaries with social media",
-       "hashtag_names": ["mentalhealth", "boundaries", "digitalwellness"],
-       "watch_time": 54, "duration": 55, "creator": "@therapyforblackgirls"},
-      {"title": "How your local food system works",
-       "hashtag_names": ["sustainability", "localfood", "community"],
-       "watch_time": 59, "duration": 60, "creator": "@climatetown"},
-      {"title": "Understanding cognitive bias in media",
-       "hashtag_names": ["criticalthinking", "medialiteracy", "psychology"],
-       "watch_time": 56, "duration": 58, "creator": "@factcheck"},
-      {"title": "5 nonfiction books that changed my life",
-       "hashtag_names": ["bookrecommendations", "education", "selfimprovement"],
-       "watch_time": 60, "duration": 60, "creator": "@moneywithkatie"},
-      {"title": "Meditation for complete beginners",
-       "hashtag_names": ["meditation", "mindfulness", "mentalhealth"],
-       "watch_time": 55, "duration": 57, "creator": "@therapyforblackgirls"},
-      {"title": "How to consume news without anxiety",
-       "hashtag_names": ["newsliteracy", "mentalhealth", "medialiteracy"],
-       "watch_time": 58, "duration": 60, "creator": "@factcheck"}
+      {
+        "title": "How to spot misinformation online",
+        "hashtag_names": [
+          "medialiteracy",
+          "criticalthinking",
+          "education"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@factcheck"
+      },
+      {
+        "title": "Beginner guide to index fund investing",
+        "hashtag_names": [
+          "financialliteracy",
+          "investing",
+          "education"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@moneywithkatie"
+      },
+      {
+        "title": "Climate solutions that actually work",
+        "hashtag_names": [
+          "climate",
+          "solutions",
+          "science"
+        ],
+        "watch_time": 62,
+        "duration": 65,
+        "creator": "@climatetown"
+      },
+      {
+        "title": "Learn Spanish in 10 minutes a day",
+        "hashtag_names": [
+          "learnspanish",
+          "language",
+          "education"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@spanishpod101"
+      },
+      {
+        "title": "Setting healthy boundaries with social media",
+        "hashtag_names": [
+          "mentalhealth",
+          "boundaries",
+          "digitalwellness"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@therapyforblackgirls"
+      },
+      {
+        "title": "How your local food system works",
+        "hashtag_names": [
+          "sustainability",
+          "localfood",
+          "community"
+        ],
+        "watch_time": 59,
+        "duration": 60,
+        "creator": "@climatetown"
+      },
+      {
+        "title": "Understanding cognitive bias in media",
+        "hashtag_names": [
+          "criticalthinking",
+          "medialiteracy",
+          "psychology"
+        ],
+        "watch_time": 56,
+        "duration": 58,
+        "creator": "@factcheck"
+      },
+      {
+        "title": "5 nonfiction books that changed my life",
+        "hashtag_names": [
+          "bookrecommendations",
+          "education",
+          "selfimprovement"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@moneywithkatie"
+      },
+      {
+        "title": "Meditation for complete beginners",
+        "hashtag_names": [
+          "meditation",
+          "mindfulness",
+          "mentalhealth"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@therapyforblackgirls"
+      },
+      {
+        "title": "How to consume news without anxiety",
+        "hashtag_names": [
+          "newsliteracy",
+          "mentalhealth",
+          "medialiteracy"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@factcheck"
+      }
+    ]
+  },
+  "mum": {
+    "user": {
+      "display_name": "Mum"
+    },
+    "metadata": {
+      "watch_count": 2341,
+      "like_count": 892,
+      "saved_count": 234,
+      "region": "GB",
+      "collections": [
+        "Recipes",
+        "Wellness",
+        "Family",
+        "Home Ideas"
+      ],
+      "peak_hours": "morning",
+      "avg_session_minutes": 22,
+      "sessions_per_day": 3,
+      "like_rate": 38,
+      "save_rate": 10,
+      "top_searches": [
+        "healthy family recipes",
+        "yoga for beginners",
+        "mindfulness meditation",
+        "parenting teenagers",
+        "home organisation tips",
+        "gut health foods",
+        "walking for fitness",
+        "sleep hygiene",
+        "anti-inflammatory diet",
+        "journalling prompts",
+        "menopause wellness",
+        "pilates at home",
+        "family meal prep",
+        "positive affirmations",
+        "reducing screen time kids"
+      ],
+      "watch_pattern": {
+        "early_morning": 42,
+        "morning": 38,
+        "afternoon": 14,
+        "evening": 5,
+        "late_night": 1
+      }
+    },
+    "videos": [
+      {
+        "title": "10 minute morning yoga flow for busy mums",
+        "hashtag_names": [
+          "yoga",
+          "wellness",
+          "morningroutine"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@yogawithmum"
+      },
+      {
+        "title": "High protein family dinner ready in 20 minutes",
+        "hashtag_names": [
+          "familydinner",
+          "healthyrecipes",
+          "mealprep"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@healthykitchen"
+      },
+      {
+        "title": "How I reduced my anxiety with breathwork",
+        "hashtag_names": [
+          "mentalhealth",
+          "breathwork",
+          "wellness"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@mindfulmoments"
+      },
+      {
+        "title": "Gut health smoothie that changed my life",
+        "hashtag_names": [
+          "guthealth",
+          "wellness",
+          "nutrition"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@healthykitchen"
+      },
+      {
+        "title": "Talking to your teen about social media",
+        "hashtag_names": [
+          "parenting",
+          "teenagers",
+          "digitalwellness"
+        ],
+        "watch_time": 59,
+        "duration": 60,
+        "creator": "@parentingtoday"
+      },
+      {
+        "title": "My simple home organisation system",
+        "hashtag_names": [
+          "homeorganisation",
+          "declutter",
+          "homeideas"
+        ],
+        "watch_time": 52,
+        "duration": 54,
+        "creator": "@tidyhome"
+      },
+      {
+        "title": "Pilates for beginners no equipment needed",
+        "hashtag_names": [
+          "pilates",
+          "fitness",
+          "wellness"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@yogawithmum"
+      },
+      {
+        "title": "Anti-inflammatory meal prep for the week",
+        "hashtag_names": [
+          "mealprep",
+          "antiinflammatory",
+          "guthealth"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@healthykitchen"
+      },
+      {
+        "title": "Sleep routine that actually works",
+        "hashtag_names": [
+          "sleep",
+          "wellness",
+          "mentalhealth"
+        ],
+        "watch_time": 55,
+        "duration": 56,
+        "creator": "@mindfulmoments"
+      },
+      {
+        "title": "Parenting through screen addiction",
+        "hashtag_names": [
+          "parenting",
+          "screentime",
+          "digitalwellness"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@parentingtoday"
+      }
+    ]
+  },
+  "dad": {
+    "user": {
+      "display_name": "Dad"
+    },
+    "metadata": {
+      "watch_count": 1823,
+      "like_count": 312,
+      "saved_count": 45,
+      "region": "GB",
+      "collections": [
+        "Tech",
+        "Finance",
+        "Sport"
+      ],
+      "peak_hours": "evening",
+      "avg_session_minutes": 18,
+      "sessions_per_day": 2,
+      "like_rate": 17,
+      "save_rate": 2,
+      "top_searches": [
+        "premier league highlights",
+        "stock market news",
+        "apple event 2024",
+        "home DIY tips",
+        "best electric cars",
+        "cycling training plan",
+        "geopolitics explained",
+        "F1 race highlights",
+        "investing for beginners",
+        "AI news today",
+        "pension planning UK",
+        "cycling gear review",
+        "world news today",
+        "smart home setup",
+        "bbq recipes men"
+      ],
+      "watch_pattern": {
+        "early_morning": 5,
+        "morning": 8,
+        "afternoon": 12,
+        "evening": 55,
+        "late_night": 20
+      }
+    },
+    "videos": [
+      {
+        "title": "Man City vs Arsenal full highlights",
+        "hashtag_names": [
+          "premierleague",
+          "football",
+          "sport"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@sportshighlights"
+      },
+      {
+        "title": "Why I switched to an electric car",
+        "hashtag_names": [
+          "electriccar",
+          "tech",
+          "sustainability"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@techreview"
+      },
+      {
+        "title": "How to start investing with 500",
+        "hashtag_names": [
+          "investing",
+          "finance",
+          "personalfinance"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@moneytalk"
+      },
+      {
+        "title": "F1 Abu Dhabi race recap",
+        "hashtag_names": [
+          "f1",
+          "sport",
+          "racing"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@sportshighlights"
+      },
+      {
+        "title": "Apple Vision Pro is it worth it",
+        "hashtag_names": [
+          "apple",
+          "tech",
+          "gadgets"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@techreview"
+      },
+      {
+        "title": "Fixing a leaking tap full guide",
+        "hashtag_names": [
+          "diy",
+          "home",
+          "plumbing"
+        ],
+        "watch_time": 52,
+        "duration": 53,
+        "creator": "@diydad"
+      },
+      {
+        "title": "My cycling training plan for beginners",
+        "hashtag_names": [
+          "cycling",
+          "fitness",
+          "sport"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@cyclinglife"
+      },
+      {
+        "title": "Geopolitics explained Middle East 2024",
+        "hashtag_names": [
+          "geopolitics",
+          "news",
+          "world"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@worldnews"
+      },
+      {
+        "title": "Smart home on a budget full setup",
+        "hashtag_names": [
+          "smarthome",
+          "tech",
+          "diy"
+        ],
+        "watch_time": 56,
+        "duration": 58,
+        "creator": "@techreview"
+      },
+      {
+        "title": "BBQ brisket low and slow method",
+        "hashtag_names": [
+          "bbq",
+          "cooking",
+          "food"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@diydad"
+      }
+    ]
+  },
+  "alex": {
+    "user": {
+      "display_name": "Alex"
+    },
+    "metadata": {
+      "watch_count": 4821,
+      "like_count": 2341,
+      "saved_count": 187,
+      "region": "GB",
+      "collections": [
+        "Must Watch",
+        "Gaming",
+        "Faves",
+        "Memes"
+      ],
+      "peak_hours": "late_night",
+      "avg_session_minutes": 78,
+      "sessions_per_day": 5,
+      "like_rate": 49,
+      "save_rate": 4,
+      "top_searches": [
+        "taylor swift eras tour",
+        "fortnite new season",
+        "netflix new shows 2024",
+        "coachella 2024 highlights",
+        "sabrina carpenter espresso",
+        "minecraft builds",
+        "best anime 2024",
+        "college tips freshers",
+        "outfit ideas aesthetic",
+        "grwm morning routine",
+        "tiktok trending sounds",
+        "celebrity drama",
+        "valorant gameplay",
+        "brat summer playlist",
+        "gen z humour"
+      ],
+      "watch_pattern": {
+        "early_morning": 2,
+        "morning": 5,
+        "afternoon": 18,
+        "evening": 30,
+        "late_night": 45
+      }
+    },
+    "videos": [
+      {
+        "title": "Taylor Swift Eras Tour setlist breakdown",
+        "hashtag_names": [
+          "taylorswift",
+          "erastour",
+          "swifties"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@popculture"
+      },
+      {
+        "title": "Fortnite chapter 5 everything new",
+        "hashtag_names": [
+          "fortnite",
+          "gaming",
+          "newseason"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@gamingwithale"
+      },
+      {
+        "title": "GRWM for uni morning routine",
+        "hashtag_names": [
+          "grwm",
+          "aesthetic",
+          "university"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@aestheticvibes"
+      },
+      {
+        "title": "Best Netflix shows to binge right now",
+        "hashtag_names": [
+          "netflix",
+          "shows",
+          "entertainment"
+        ],
+        "watch_time": 52,
+        "duration": 54,
+        "creator": "@popculture"
+      },
+      {
+        "title": "Sabrina Carpenter Espresso reaction",
+        "hashtag_names": [
+          "sabrinacarpenter",
+          "music",
+          "pop"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@musicreacts"
+      },
+      {
+        "title": "Minecraft survival house build 2024",
+        "hashtag_names": [
+          "minecraft",
+          "gaming",
+          "build"
+        ],
+        "watch_time": 59,
+        "duration": 60,
+        "creator": "@gamingwithale"
+      },
+      {
+        "title": "Aesthetic outfit inspo brat summer",
+        "hashtag_names": [
+          "aesthetic",
+          "fashion",
+          "outfitinspo"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@aestheticvibes"
+      },
+      {
+        "title": "Coachella 2024 best moments",
+        "hashtag_names": [
+          "coachella",
+          "festival",
+          "music"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@popculture"
+      },
+      {
+        "title": "Gen Z humour that only we understand",
+        "hashtag_names": [
+          "genz",
+          "memes",
+          "funny"
+        ],
+        "watch_time": 58,
+        "duration": 58,
+        "creator": "@genzmemes"
+      },
+      {
+        "title": "Top anime to watch in 2024 tier list",
+        "hashtag_names": [
+          "anime",
+          "tierlist",
+          "entertainment"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@animefan"
+      }
+    ]
+  },
+  "grandma": {
+    "user": {
+      "display_name": "Grandma"
+    },
+    "metadata": {
+      "watch_count": 892,
+      "like_count": 445,
+      "saved_count": 312,
+      "region": "GB",
+      "collections": [
+        "Recipes",
+        "Garden",
+        "Family Videos",
+        "Crafts"
+      ],
+      "peak_hours": "afternoon",
+      "avg_session_minutes": 12,
+      "sessions_per_day": 2,
+      "like_rate": 50,
+      "save_rate": 35,
+      "top_searches": [
+        "traditional british recipes",
+        "gardening tips beginners",
+        "knitting patterns free",
+        "how to video call family",
+        "easy baking recipes",
+        "arthritis gentle exercises",
+        "bird watching UK",
+        "classic tv shows",
+        "how to use whatsapp",
+        "crossword tips",
+        "flower arranging",
+        "gentle yoga seniors",
+        "scone recipe",
+        "national trust gardens",
+        "vintage sewing patterns"
+      ],
+      "watch_pattern": {
+        "early_morning": 10,
+        "morning": 25,
+        "afternoon": 50,
+        "evening": 14,
+        "late_night": 1
+      }
+    },
+    "videos": [
+      {
+        "title": "Mary Berry classic Victoria sponge recipe",
+        "hashtag_names": [
+          "baking",
+          "britishrecipes",
+          "cake"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@britishbaking"
+      },
+      {
+        "title": "Spring garden prep what to plant now",
+        "hashtag_names": [
+          "gardening",
+          "garden",
+          "spring"
+        ],
+        "watch_time": 55,
+        "duration": 57,
+        "creator": "@gardenlife"
+      },
+      {
+        "title": "Free beginner knitting pattern easy scarf",
+        "hashtag_names": [
+          "knitting",
+          "crafts",
+          "diy"
+        ],
+        "watch_time": 52,
+        "duration": 54,
+        "creator": "@craftswithnan"
+      },
+      {
+        "title": "Gentle morning yoga for seniors",
+        "hashtag_names": [
+          "yoga",
+          "seniors",
+          "gentleexercise"
+        ],
+        "watch_time": 60,
+        "duration": 60,
+        "creator": "@wellnessforall"
+      },
+      {
+        "title": "How to video call on WhatsApp step by step",
+        "hashtag_names": [
+          "tech",
+          "howto",
+          "family"
+        ],
+        "watch_time": 45,
+        "duration": 47,
+        "creator": "@techforseniors"
+      },
+      {
+        "title": "Bird watching in the UK spring migrants",
+        "hashtag_names": [
+          "birdwatching",
+          "nature",
+          "uk"
+        ],
+        "watch_time": 58,
+        "duration": 60,
+        "creator": "@naturelover"
+      },
+      {
+        "title": "Classic British scone recipe cream tea",
+        "hashtag_names": [
+          "scones",
+          "britishrecipes",
+          "baking"
+        ],
+        "watch_time": 57,
+        "duration": 58,
+        "creator": "@britishbaking"
+      },
+      {
+        "title": "Flower arranging for beginners",
+        "hashtag_names": [
+          "flowers",
+          "crafts",
+          "homedecor"
+        ],
+        "watch_time": 54,
+        "duration": 55,
+        "creator": "@craftswithnan"
+      },
+      {
+        "title": "National Trust hidden gems top 10",
+        "hashtag_names": [
+          "nationaltrust",
+          "uk",
+          "gardens"
+        ],
+        "watch_time": 60,
+        "duration": 62,
+        "creator": "@gardenlife"
+      },
+      {
+        "title": "Arthritis exercises you can do at home",
+        "hashtag_names": [
+          "arthritis",
+          "health",
+          "seniors"
+        ],
+        "watch_time": 55,
+        "duration": 56,
+        "creator": "@wellnessforall"
+      }
     ]
   }
 }

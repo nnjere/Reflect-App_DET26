@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Content Patterns – This Week</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    /* ── Page shell ── */
+    .page {
+      width: 393px;
+      height: 844px;           /* fixed device height */
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 24px;
+    }
+
+    .page-scroll::-webkit-scrollbar { display: none; }
+    .page-scroll { scrollbar-width: none; }
+
+    /* ── Top bar ── */
+    .topbar {
+      position: relative;
+      height: 104px;
+      padding-top: 35px;
+      padding-left: 13px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .back-btn img { width: 20px; height: 20px; }
+
+    .back-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .topbar-decoration {
+      position: absolute;
+      top: 7px;
+      right: 4px;
+      width: 95px;
+      height: 97px;
+    }
+
+    .topbar-decoration img { position: absolute; }
+    .ellipse-1 { top:0; left:4px; width:78px; height:59px; transform:rotate(131.31deg); }
+    .ellipse-2 { top:2px; left:12px; width:78px; height:45px; transform:rotate(118.66deg); }
+    .star-icon  { top:20px; left:21px; width:59px; height:54px; }
+
+    /* ── Page header ── */
+    .page-header {
+      padding: 0 25px 20px;
+    }
+
+    .page-overline {
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: 0.40px;
+      line-height: 36px;
+      margin-bottom: 10px;
+    }
+
+    .page-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      letter-spacing: -0.15px;
+      line-height: 20px;
+    }
+
+    /* ── Card stack ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 27px;
+      padding: 0 24px;
+    }
+
+    /* ── Base card ── */
+    .card {
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .card--cream { background: #fefaef; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      line-height: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ══════════════════════════════
+       WEEKLY SUMMARY CARD
+    ══════════════════════════════ */
+    .summary-big {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .summary-number {
+      font-size: 48px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 48px;
+      display: block;
+    }
+
+    .summary-sub {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .summary-deltas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 24px;
+    }
+
+    .delta-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .delta-value {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 18px;
+      font-weight: 500;
+      color: #0a0a0a;
+      line-height: 28px;
+    }
+
+    .delta-value img { width: 16px; height: 16px; }
+
+    .delta-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    .divider-v {
+      width: 1px;
+      height: 32px;
+      background: rgba(143,143,143,0.2);
+    }
+
+    .summary-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: #fff1e3;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-box-value {
+      font-size: 18px;
+      font-weight: 500;
+      color: #0a0a0a;
+      line-height: 28px;
+    }
+
+    .stat-box-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    .insight-box {
+      background: #fff1e3;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+      text-align: center;
+    }
+
+    /* ══════════════════════════════
+       DAILY PATTERNS CARD
+    ══════════════════════════════ */
+    .day-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .day-row { display: flex; flex-direction: column; gap: 4px; }
+
+    .day-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
+    .day-bar {
+      height: 24px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 9999px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .seg-ent  { background: rgba(255,184,140,0.7); }
+    .seg-well { background: rgba(133,184,125,0.7); }
+    .seg-pop  { background: rgba(177,151,252,0.7); }
+    .seg-oth  { background: rgba(147,197,253,0.7); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════
+       WATCH TIME CARD
+    ══════════════════════════════ */
+    .time-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .time-row { display: flex; flex-direction: column; gap: 8px; }
+
+    .time-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .time-slot {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 20px;
+    }
+
+    .time-pct {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .time-bar {
+      height: 12px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 9999px;
+      overflow: hidden;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .time-fill {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    .time-fill--purple { background: #b197fc; }
+    .time-fill--peach  { background: #ffb88c; }
+
+    /* ══════════════════════════════
+       TOP CONTENT THEMES CARD
+    ══════════════════════════════ */
+    .theme-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .theme-tag {
+      background: rgba(167,139,250,0.15);
+      border-radius: 9999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 20px;
+      white-space: nowrap;
+    }
+
+    .themes-footnote {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 19.5px;
+    }
+
+    /* ══════════════════════════════
+       BEHAVIORAL PATTERN CARD
+    ══════════════════════════════ */
+    .behav-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .behav-item { display: flex; flex-direction: column; gap: 4px; }
+
+    .behav-sublabel {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .behav-value {
+      font-size: 18px;
+      font-weight: 500;
+      color: #0a0a0a;
+      line-height: 28px;
+    }
+
+    /* ══════════════════════════════
+       DEPTH VS VARIETY CARD
+    ══════════════════════════════ */
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 16px;
+    }
+
+    .slider-track {
+      height: 8px;
+      background: linear-gradient(to right, rgba(177,151,252,0.3), rgba(167,139,250,0.3) 50%, rgba(133,184,125,0.3));
+      border-radius: 9999px;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      left: 61.6%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: #a78bfa;
+      border: 1.4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0px 10px 15px rgba(0,0,0,0.1), 0px 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .slider-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 22.75px;
+    }
+
+    /* ══════════════════════════════
+       INTENTIONAL / AUTOMATIC CARD
+    ══════════════════════════════ */
+    .intent-question {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 24px;
+      margin-bottom: 16px;
+    }
+
+    .intent-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .intent-btn {
+      background: rgba(167,139,250,0.15);
+      border: none;
+      border-radius: 9999px;
+      height: 44px;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 500;
+      color: #262626;
+      letter-spacing: -0.15px;
+      cursor: pointer;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.25);
+      transition: background 0.15s ease, transform 0.1s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .intent-btn:hover { background: rgba(167,139,250,0.25); }
+    .intent-btn:active { transform: scale(0.98); }
+
+    /* ══════════════════════════════
+       VARIETY VS NARROW FOCUS
+    ══════════════════════════════ */
+    .variety-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .variety-item { display: flex; flex-direction: column; gap: 4px; }
+
+    .variety-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 20px;
+    }
+
+    .variety-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .variety-dot--green  { background: #85b87d; }
+    .variety-dot--orange { background: #ff7d45; }
+
+    .variety-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+      padding-left: 16px;
+    }
+
+    /* ══════════════════════════════
+       IMPORTANT NUANCE CARD
+    ══════════════════════════════ */
+    .nuance-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+    }
+
+    .nuance-text + .nuance-text { margin-top: 16px; }
+
+    /* ══════════════════════════════
+       BOTTOM NAV (sticky)
+    ══════════════════════════════ */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252, 239, 222, 0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+      z-index: 100;
+      margin-top: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-icon { width: 24px; height: 24px; }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 16px;
+      color: #8f8f8f;
+    }
+
+    .nav-label--active { color: #ff7faa; }
+  </style>
+<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+<body>
+<div class="page">
+<div class="page-scroll">
+
+  <!-- Top bar: back + decoration -->
+  <div class="topbar">
+    <a class="back-btn" href="user-dashboard.html">
+      <img src="./assets/ab5ce95388de20a65e8f90f933f6d2295a6abeba.svg" alt="Back" />
+      <span class="back-label">Back</span>
+    </a>
+    <div class="topbar-decoration">
+      <img class="ellipse-1" src="./assets/5ea5b9df4c21607221971994b6fa8d5182e9562f.svg" alt="" />
+      <img class="ellipse-2" src="./assets/ff18d42df1512849be200bd4b708d57a450b0beb.svg" alt="" />
+      <img class="star-icon"  src="./assets/47c8fcdae0a7e9b6218a13682479f1f3bd338be1.svg" alt="" />
+    </div>
+  </div>
+
+  <!-- Page header -->
+  <div class="page-header">
+    <p class="page-overline">Content Patterns &amp; Diversity</p>
+    <h1 class="page-title">This Week</h1>
+    <p class="page-desc">A reflection of your digital patterns over the last week, your diversity was higher than last week.</p>
+  </div>
+
+  <!-- Card stack -->
+  <div class="cards">
+
+    <!-- 1 · Weekly Summary -->
+    <div class="card card--cream">
+      <p class="section-label">Weekly Summary</p>
+
+      <div class="summary-big">
+        <span class="summary-number">5,284</span>
+      </div>
+      <p class="summary-sub">minutes this week</p>
+
+      <div class="summary-deltas">
+        <div class="delta-item">
+          <div class="delta-value">
+            <img src="./assets/72b3d9a71b0f993669f6c632734ca1e45842858c.svg" alt="" />
+            +12%
+          </div>
+          <span class="delta-label">from last week</span>
+        </div>
+        <div class="divider-v"></div>
+        <div class="delta-item">
+          <div class="delta-value">
+            <img src="./assets/6759e211a2d5b6c8ad0acc63f9666a4fe8f1f762.svg" alt="" />
+            High
+          </div>
+          <span class="delta-label">diversity trend</span>
+        </div>
+      </div>
+
+      <div class="summary-stats">
+        <div class="stat-box">
+          <span class="stat-box-value">Avg: 14</span>
+          <span class="stat-box-label">Sessions Per Day</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-value">Avg 100</span>
+          <span class="stat-box-label">Posts Per Session</span>
+        </div>
+      </div>
+
+      <div class="insight-box">
+        Your habits are shifting slightly toward more entertainment content
+      </div>
+    </div>
+
+    <!-- 2 · Daily Patterns -->
+    <div class="card">
+      <p class="section-label">Daily Patterns</p>
+
+      <div class="day-rows">
+        <!-- Mon: Ent 35%, Well 20%, Pop 25%, Oth 20% -->
+        <div class="day-row">
+          <span class="day-label">Mon</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:35%"></div>
+            <div class="seg-well" style="width:20%"></div>
+            <div class="seg-pop" style="width:25%"></div>
+            <div class="seg-oth" style="width:20%"></div>
+          </div>
+        </div>
+        <!-- Tue: Ent 40%, Well 15%, Pop 30%, Oth 15% -->
+        <div class="day-row">
+          <span class="day-label">Tue</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:40%"></div>
+            <div class="seg-well" style="width:15%"></div>
+            <div class="seg-pop" style="width:30%"></div>
+            <div class="seg-oth" style="width:15%"></div>
+          </div>
+        </div>
+        <!-- Wed: Ent 30%, Well 30%, Pop 20%, Oth 20% -->
+        <div class="day-row">
+          <span class="day-label">Wed</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:30%"></div>
+            <div class="seg-well" style="width:30%"></div>
+            <div class="seg-pop" style="width:20%"></div>
+            <div class="seg-oth" style="width:20%"></div>
+          </div>
+        </div>
+        <!-- Thu: Ent 45%, Well 15%, Pop 25%, Oth 15% -->
+        <div class="day-row">
+          <span class="day-label">Thu</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:45%"></div>
+            <div class="seg-well" style="width:15%"></div>
+            <div class="seg-pop" style="width:25%"></div>
+            <div class="seg-oth" style="width:15%"></div>
+          </div>
+        </div>
+        <!-- Fri: Ent 50%, Well 10%, Pop 30%, Oth 10% -->
+        <div class="day-row">
+          <span class="day-label">Fri</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:50%"></div>
+            <div class="seg-well" style="width:10%"></div>
+            <div class="seg-pop" style="width:30%"></div>
+            <div class="seg-oth" style="width:10%"></div>
+          </div>
+        </div>
+        <!-- Sat: Ent 35%, Well 25%, Pop 25%, Oth 15% -->
+        <div class="day-row">
+          <span class="day-label">Sat</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:35%"></div>
+            <div class="seg-well" style="width:25%"></div>
+            <div class="seg-pop" style="width:25%"></div>
+            <div class="seg-oth" style="width:15%"></div>
+          </div>
+        </div>
+        <!-- Sun: Ent 30%, Well 35%, Pop 20%, Oth 15% -->
+        <div class="day-row">
+          <span class="day-label">Sun</span>
+          <div class="day-bar">
+            <div class="seg-ent" style="width:30%"></div>
+            <div class="seg-well" style="width:35%"></div>
+            <div class="seg-pop" style="width:20%"></div>
+            <div class="seg-oth" style="width:15%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,184,140,0.7)"></div> Entertainment</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(133,184,125,0.7)"></div> Wellness</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(177,151,252,0.7)"></div> Pop Culture</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(147,197,253,0.7)"></div> Other</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(133,184,125,0.7)"></div> Wellness</div>
+      </div>
+    </div>
+
+    <!-- 3 · Watch time by time of day -->
+    <div class="card">
+      <p class="section-label">Watch time by time of day</p>
+
+      <div class="time-rows">
+        <div class="time-row">
+          <div class="time-header">
+            <span class="time-slot">5 – 10 AM</span>
+            <span class="time-pct">32%</span>
+          </div>
+          <div class="time-bar">
+            <div class="time-fill time-fill--purple" style="width:32%"></div>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-header">
+            <span class="time-slot">10AM – 3PM</span>
+            <span class="time-pct">28%</span>
+          </div>
+          <div class="time-bar">
+            <div class="time-fill time-fill--purple" style="width:28%"></div>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-header">
+            <span class="time-slot">3PM – 7PM</span>
+            <span class="time-pct">28%</span>
+          </div>
+          <div class="time-bar">
+            <div class="time-fill time-fill--purple" style="width:28%"></div>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-header">
+            <span class="time-slot">7PM – 11PM</span>
+            <span class="time-pct">28%</span>
+          </div>
+          <div class="time-bar">
+            <div class="time-fill time-fill--purple" style="width:28%"></div>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-header">
+            <span class="time-slot">11PM+</span>
+            <span class="time-pct">28%</span>
+          </div>
+          <div class="time-bar">
+            <div class="time-fill time-fill--peach" style="width:28%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · Top Content Themes -->
+    <div class="card">
+      <p class="section-label">Top Content Themes</p>
+      <div class="theme-tags">
+        <span class="theme-tag">memes</span>
+        <span class="theme-tag">influencers</span>
+        <span class="theme-tag">fitness</span>
+        <span class="theme-tag">tech</span>
+        <span class="theme-tag">social justice</span>
+        <span class="theme-tag">cooking</span>
+      </div>
+      <p class="themes-footnote">These themes appeared most often in your feed this week</p>
+    </div>
+
+    <!-- 5 · Behavioral Pattern -->
+    <div class="card">
+      <p class="section-label">Behavioral Pattern</p>
+      <div class="behav-rows">
+        <div class="behav-item">
+          <span class="behav-sublabel">Most active time</span>
+          <span class="behav-value">Late night</span>
+        </div>
+        <div class="behav-item">
+          <span class="behav-sublabel">Longest session</span>
+          <span class="behav-value">2h 14m</span>
+        </div>
+        <div class="behav-item">
+          <span class="behav-sublabel">Scroll pattern</span>
+          <span class="behav-value">Mostly passive</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 · Depth vs Variety -->
+    <div class="card">
+      <p class="section-label">Depth vs Variety</p>
+      <div class="slider-labels">
+        <span class="slider-label">Focused</span>
+        <span class="slider-label">Exploratory</span>
+      </div>
+      <div class="slider-track">
+        <div class="slider-thumb"></div>
+      </div>
+      <p class="slider-desc">You lean toward exploring varied topics rather than going deep on specific areas</p>
+    </div>
+
+    <!-- 7 · Intentional or automatic? -->
+    <div class="card">
+      <p class="intent-question">Did this week feel intentional or automatic?</p>
+      <div class="intent-buttons">
+        <button class="intent-btn">More intentional</button>
+        <button class="intent-btn">More automatic</button>
+        <button class="intent-btn">Not sure</button>
+      </div>
+    </div>
+
+    <!-- 8 · Variety vs. Narrow Focus (no card wrapper – translucent) -->
+    <div class="card">
+      <p class="section-label">Variety vs. Narrow Focus</p>
+      <div class="variety-items">
+        <div class="variety-item">
+          <div class="variety-title">
+            <div class="variety-dot variety-dot--green"></div>
+            High diversity
+          </div>
+          <p class="variety-desc">Exposure to many topics, perspectives, and formats. Can feel stimulating but sometimes scattered.</p>
+        </div>
+        <div class="variety-item">
+          <div class="variety-title">
+            <div class="variety-dot variety-dot--orange"></div>
+            Low diversity
+          </div>
+          <p class="variety-desc">Focus on specific topics or niches. Can feel cohesive but might limit exposure to new ideas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 · Important Nuance -->
+    <div class="card">
+      <p class="section-label">Important Nuance</p>
+      <p class="nuance-text">High diversity doesn't automatically mean better. Too much variety can feel overwhelming or prevent you from going deep on topics you care about. Low diversity isn't inherently limiting—it might reflect focused interests.</p>
+      <p class="nuance-text">The goal is awareness: Does this level of diversity feel right for what you want from your feed? Are you learning new things, or just skimming the surface?</p>
+    </div>
+
+  </div><!-- /cards -->
+
+</div><!-- /page-scroll -->
+
+<!-- Sticky bottom nav (inside page) -->
+<nav class="bottom-nav">
+  <div class="nav-item">
+    <img class="nav-icon" src="./assets/995c3916f260cfa20b8408857a974fae0bd99308.svg" alt="Home" />
+    <span class="nav-label nav-label--active">Home</span>
+  </div>
+  <div class="nav-item">
+    <img class="nav-icon" src="./assets/afc31d25087a32ee7a43e009a69c7ba9a557b40e.svg" alt="Ecosystem" />
+    <span class="nav-label">Ecosystem</span>
+  </div>
+  <div class="nav-item">
+    <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+    <span class="nav-label">Explore</span>
+  </div>
+  <div class="nav-item">
+    <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+    <span class="nav-label">Reflect</span>
+  </div>
+</nav>
+
+</div><!-- /page -->
+</body>
+</html>
