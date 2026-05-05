@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -579,7 +580,7 @@
 
     .nav-label--active { color: #ff7faa; }
   </style>
-<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+</head>
 <body>
 <div class="page">
 <div class="page-scroll">
@@ -612,7 +613,7 @@
       <p class="section-label">Weekly Summary</p>
 
       <div class="summary-big">
-        <span class="summary-number">5,284</span>
+        <span class="summary-number" id="r-watch-count">5,284</span>
       </div>
       <p class="summary-sub">minutes this week</p>
 
@@ -636,16 +637,16 @@
 
       <div class="summary-stats">
         <div class="stat-box">
-          <span class="stat-box-value">Avg: 14</span>
+          <span class="stat-box-value" id="r-sessions">Avg: 14</span>
           <span class="stat-box-label">Sessions Per Day</span>
         </div>
         <div class="stat-box">
-          <span class="stat-box-value">Avg 100</span>
+          <span class="stat-box-value" id="r-posts-session">Avg 100</span>
           <span class="stat-box-label">Posts Per Session</span>
         </div>
       </div>
 
-      <div class="insight-box">
+      <div class="insight-box" id="r-insight">
         Your habits are shifting slightly toward more entertainment content
       </div>
     </div>
@@ -793,7 +794,7 @@
     <!-- 4 · Top Content Themes -->
     <div class="card">
       <p class="section-label">Top Content Themes</p>
-      <div class="theme-tags">
+      <div class="theme-tags" id="r-theme-tags">
         <span class="theme-tag">memes</span>
         <span class="theme-tag">influencers</span>
         <span class="theme-tag">fitness</span>
@@ -810,15 +811,15 @@
       <div class="behav-rows">
         <div class="behav-item">
           <span class="behav-sublabel">Most active time</span>
-          <span class="behav-value">Late night</span>
+          <span class="behav-value" id="r-peak-time">Late night</span>
         </div>
         <div class="behav-item">
           <span class="behav-sublabel">Longest session</span>
-          <span class="behav-value">2h 14m</span>
+          <span class="behav-value" id="r-avg-session">2h 14m</span>
         </div>
         <div class="behav-item">
           <span class="behav-sublabel">Scroll pattern</span>
-          <span class="behav-value">Mostly passive</span>
+          <span class="behav-value" id="r-scroll-pattern">Mostly passive</span>
         </div>
       </div>
     </div>
@@ -899,5 +900,128 @@
 </nav>
 
 </div><!-- /page -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const report  = Reflect.getReport();
+  if (!report) return;
+
+  const summary = Reflect.getDataSummary(report);
+  const themes  = Reflect.getThemes(report);
+  const echo    = Reflect.getEchoChamber(report);
+  const ps      = Reflect.getPrintSummary(report);
+
+  // ── Watch count ─────────────────────────────────────
+  const wc = document.getElementById('r-watch-count');
+  if (wc) wc.textContent = (summary.watch_count || 0).toLocaleString();
+
+  // ── Sessions / posts ────────────────────────────────
+  const sess = document.getElementById('r-sessions');
+  if (sess) sess.textContent = `Avg: ${summary.num_sessions || 0}`;
+  const posts = document.getElementById('r-posts-session');
+  if (posts) posts.textContent = `Avg ${summary.avg_session_videos || 0}`;
+
+  // ── Insight ─────────────────────────────────────────
+  const ins = document.getElementById('r-insight');
+  if (ins && ps.line1) ins.textContent = ps.line1;
+
+  // ── Theme tags ──────────────────────────────────────
+  const tagsEl = document.getElementById('r-theme-tags');
+  if (tagsEl) {
+    const src = echo.key_themes?.length ? echo.key_themes
+      : themes.slice(0,6).map(t => t.theme);
+    if (src.length) tagsEl.innerHTML = src.map(t => `<span class="theme-tag">${t}</span>`).join('');
+  }
+
+  // ── Behavioral ──────────────────────────────────────
+  const peakLabels = { early_morning:'Early morning', morning:'Morning', afternoon:'Afternoon', evening:'Evening', late_night:'Late night', unknown:'Varied' };
+  const peakEl = document.getElementById('r-peak-time');
+  if (peakEl) peakEl.textContent = peakLabels[summary.peak_hours] || 'Varied';
+  const sessEl = document.getElementById('r-avg-session');
+  if (sessEl) sessEl.textContent = `${summary.avg_session_videos || 0} videos`;
+  const scrollEl = document.getElementById('r-scroll-pattern');
+  if (scrollEl) {
+    const lr = summary.like_rate || 0;
+    scrollEl.textContent = lr > 30 ? 'Highly active' : lr > 15 ? 'Active' : lr > 5 ? 'Moderate' : 'Mostly passive';
+  }
+
+  // ── Time of day bars (real watch_pattern data) ──────
+  const wp = summary.watch_pattern || {};
+  const timeSlotMap = [
+    { key: 'early_morning', label: '5 – 10 AM' },
+    { key: 'morning',       label: '10AM – 3PM' },
+    { key: 'afternoon',     label: '3PM – 7PM' },
+    { key: 'evening',       label: '7PM – 11PM' },
+    { key: 'late_night',    label: '11PM+' },
+  ];
+  const timeRows  = document.querySelectorAll('.time-row');
+  const timePcts  = document.querySelectorAll('.time-pct');
+  const timeFills = document.querySelectorAll('.time-fill');
+  const timeSlots = document.querySelectorAll('.time-slot');
+  timeSlotMap.forEach((item, i) => {
+    const pct = wp[item.key] || 0;
+    if (timeSlots[i]) timeSlots[i].textContent  = item.label;
+    if (timePcts[i])  timePcts[i].textContent   = `${pct}%`;
+    if (timeFills[i]) timeFills[i].style.width  = `${pct}%`;
+    // Colour based on day vs night
+    if (timeFills[i]) {
+      timeFills[i].className = 'time-fill';
+      timeFills[i].classList.add(
+        item.key === 'late_night' ? 'time-fill--peach' : 'time-fill--purple'
+      );
+    }
+  });
+
+  // ── Daily pattern bars (from daily_counts) ──────────
+  const daily = summary.daily_counts || {};
+  const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const DAY_SHORT = { Monday:'Mon', Tuesday:'Tue', Wednesday:'Wed', Thursday:'Thu', Friday:'Fri', Saturday:'Sat', Sunday:'Sun' };
+
+  // Get theme percentages for bar segments
+  const t0 = themes[0]?.percentage || 35;
+  const t1 = themes[1]?.percentage || 25;
+  const t2 = themes[2]?.percentage || 20;
+  const t3 = Math.max(0, 100 - t0 - t1 - t2);
+
+  // Max count across days (for proportional scaling)
+  const counts = DAYS.map(d => daily[d] || 0);
+  const maxCount = Math.max(...counts, 1);
+
+  const dayRowsContainer = document.querySelector('.day-rows');
+  if (dayRowsContainer) {
+    dayRowsContainer.innerHTML = DAYS.map(day => {
+      const count = daily[day] || 0;
+
+      // If this day had no activity — show an empty muted row
+      if (count === 0) {
+        return `
+          <div class="day-row">
+            <span class="day-label">${DAY_SHORT[day]}</span>
+            <div class="day-bar" style="background:rgba(0,0,0,0.04);border-radius:9999px;">
+              <!-- no activity -->
+            </div>
+          </div>`;
+      }
+
+      // Scale total bar width by relative activity (max day = 100%)
+      const scale = count / maxCount;
+      const w0 = (t0 * scale).toFixed(1);
+      const w1 = (t1 * scale).toFixed(1);
+      const w2 = (t2 * scale).toFixed(1);
+      const w3 = (t3 * scale).toFixed(1);
+
+      return `
+        <div class="day-row">
+          <span class="day-label">${DAY_SHORT[day]}</span>
+          <div class="day-bar">
+            <div class="seg-ent"  style="width:${w0}%"></div>
+            <div class="seg-well" style="width:${w1}%"></div>
+            <div class="seg-pop"  style="width:${w2}%"></div>
+            <div class="seg-oth"  style="width:${w3}%"></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+});
+</script>
 </body>
 </html>

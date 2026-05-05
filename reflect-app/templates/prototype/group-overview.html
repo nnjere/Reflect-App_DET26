@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=393px, initial-scale=1.0" />
-  <title>Group Overview</title>
+  <title>Family Ecosystem</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
-  <script src="./js/reflect-data.js"></script>
-  <script src="./js/ecosystem-helpers.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,12 +20,16 @@
       padding: 24px 0 40px;
     }
 
+    /* ── Phone shell ── */
     .page {
       width: 393px;
       height: 844px;
       background: #fef7e5;
       border-radius: 44px;
-      box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.12),
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10);
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -43,20 +45,65 @@
     .page-scroll::-webkit-scrollbar { display: none; }
     .page-scroll { scrollbar-width: none; }
 
-    /* ── Topbar ── */
-    .topbar { position: relative; padding: 52px 24px 0; margin-bottom: 16px; }
-    .back-btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 14px; font-weight: 500; color: #8f8f8f; }
-    .topbar-deco { position: absolute; top: 38px; right: 4px; width: 53px; height: 51px; }
+    /* ── Top bar ── */
+    .topbar {
+      position: relative;
+      padding: 48px 24px 0;
+      margin-bottom: 16px;
+    }
 
-    /* ── Page header ── */
-    .page-header { padding: 0 24px; margin-bottom: 16px; }
-    .page-title { font-size: 30px; font-weight: 600; color: #0a0a0a; line-height: 36px; }
-    .page-subtitle { font-size: 14px; color: #8f8f8f; line-height: 20px; margin-top: 4px; }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    .topbar-deco {
+      position: absolute;
+      top: 33px;
+      right: 4px;
+      width: 53px;
+      height: 51px;
+      object-fit: cover;
+    }
+
+    /* ── Page heading ── */
+    .page-header {
+      padding: 0 24px;
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 36px;
+      text-transform: capitalize;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+      margin-top: 4px;
+    }
 
     /* ── Filter tabs ── */
-    .filter-tabs { display: flex; gap: 8px; padding: 0 24px 16px; overflow-x: auto; }
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 24px 16px;
+      overflow-x: auto;
+    }
     .filter-tabs::-webkit-scrollbar { display: none; }
     .filter-tabs { scrollbar-width: none; }
+
     .filter-tab {
       flex-shrink: 0;
       height: 36px;
@@ -68,44 +115,53 @@
       cursor: pointer;
       line-height: 36px;
       font-family: 'Inter', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
+    }
+
+    .filter-tab--active {
+      background: rgba(255,255,255,0.6);
+      color: #0a0a0a;
+      box-shadow: 0px 1px 3px rgba(0,0,0,0.1), 0px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .filter-tab--ghost {
       background: rgba(255,255,255,0.2);
       color: #8f8f8f;
     }
-    .filter-tab--active { background: rgba(255,255,255,0.6); color: #0a0a0a; box-shadow: 0px 1px 3px rgba(0,0,0,0.1); }
 
-    /* ── Viz card ── */
+    /* ── Visualization card ── */
     .viz-card {
       margin: 0 21px 16px;
       height: 332px;
       border-radius: 32px;
-      background: rgba(254,187,206,0.45);
+      background: rgba(255, 127, 170, 0.2);
       box-shadow: inset 0px 1px 4px 0px rgba(0,0,0,0.1);
       overflow: hidden;
       position: relative;
     }
 
-    .viz-venn {
+    /* All viz elements positioned absolutely */
+    .viz-card img.vc {
       position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -58%);
     }
 
-    /* member labels */
     .viz-label {
       position: absolute;
       font-size: 12px;
       font-weight: 700;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.5);
+      line-height: 16px;
       pointer-events: none;
       white-space: nowrap;
     }
 
+    /* The cream-colored info strip at the bottom of the viz card.
+       A wide pill (bleeds L/R beyond card edges, clipped by overflow:hidden)
+       showing the alignment context text. */
     .viz-info-strip {
       position: absolute;
-      left: -24px; right: -24px;
+      /* negative left/right bleeds the pill corners past the card boundary */
+      left: -24px;
+      right: -24px;
       top: 228px;
       height: 106px;
       background: #fef7e5;
@@ -113,64 +169,169 @@
       box-shadow: 0px 1px 4px rgba(0,0,0,0.1);
       padding: 18px 0 0 52px;
     }
-    .viz-info-line { font-size: 14px; color: #8f8f8f; line-height: 20px; }
 
-    /* ── Lower cards ── */
-    .lower-cards { display: flex; flex-direction: column; gap: 24px; padding: 0 21px; }
+    .viz-info-line {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    /* ── Group Diversity card ── */
+    .diversity-card {
+      margin: 0 23px 24px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 32px;
+      box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
+      padding: 20px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      overflow: hidden;
+    }
+
+    .info-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      font-style: italic;
+      font-weight: 700;
+      color: rgba(109, 40, 217, 0.7);
+    }
+
+    .diversity-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 24px;
+      margin-bottom: 4px;
+    }
+
+    .diversity-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 22.75px;
+    }
+
+    /* ── Lower info cards ── */
+    .lower-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding: 0 23px;
+    }
 
     .info-card {
-      background: rgba(255,255,255,0.4);
+      background: rgba(255, 255, 255, 0.4);
       border-radius: 32px;
       box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
       padding: 24px;
+      overflow: hidden;
     }
 
-    .info-card--white { background: rgba(255,255,255,0.5); }
-    .info-card--cream { background: rgba(254,247,229,0.7); }
+    .info-card--white  { background: rgba(255,255,255,0.5); }
+    .info-card--cream  { background: rgba(254,247,229,0.7); }
 
-    .section-label { font-size: 12px; font-weight: 500; color: #8f8f8f; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 16px; }
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #8f8f8f;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      line-height: 16px;
+      margin-bottom: 16px;
+    }
 
     /* Legend */
     .legend-rows { display: flex; flex-direction: column; gap: 12px; }
-    .legend-row { display: flex; align-items: center; gap: 12px; }
-    .legend-dot-lg { width: 32px; height: 32px; border-radius: 50%; opacity: 0.7; flex-shrink: 0; }
-    .legend-dots-sm { display: flex; gap: 4px; }
-    .legend-dot-sm { width: 24px; height: 24px; border-radius: 50%; opacity: 0.7; }
-    .legend-text-title { font-size: 14px; font-weight: 500; color: #0a0a0a; }
-    .legend-text-sub { font-size: 12px; color: #8f8f8f; }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .legend-circle-lg {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ff7faa;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    .legend-dots-sm {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .legend-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+    .legend-dot--orange { background: #ff7d45; }
+    .legend-dot--green  { background: #85b87d; }
+    .legend-dot--purple { background: #b197fc; }
+
+    .legend-text-wrap {}
+    .legend-text-title { font-size: 14px; font-weight: 500; color: #0a0a0a; line-height: 20px; }
+    .legend-text-sub   { font-size: 12px; font-weight: 400; color: #8f8f8f; line-height: 16px; }
 
     /* Theme tags */
     .theme-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
     .theme-tag {
-      background: rgba(255,127,170,0.15);
+      background: rgba(255, 127, 170, 0.15);
       border-radius: 9999px;
       padding: 12px 16px;
       font-size: 12px;
+      font-weight: 400;
       color: #262626;
+      line-height: 16px;
       box-shadow: inset 0px 0.5px 1px 0px rgba(0,0,0,0.15);
     }
 
     /* Bullet list */
     .bullet-list { display: flex; flex-direction: column; gap: 12px; }
-    .bullet-item { display: flex; align-items: flex-start; gap: 12px; }
-    .bullet-dot { width: 6px; height: 6px; border-radius: 50%; background: #8f8f8f; flex-shrink: 0; margin-top: 8px; }
-    .bullet-text { font-size: 14px; color: #262626; line-height: 22px; }
 
-    /* Member comparison cards */
-    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .comparison-card { background: rgba(255,255,255,0.5); border-radius: 16px; padding: 14px; }
-    .comparison-names { font-size: 12px; font-weight: 600; color: #0a0a0a; margin-bottom: 6px; }
-    .overlap-track { height: 6px; background: rgba(0,0,0,0.08); border-radius: 9999px; overflow: hidden; margin-bottom: 4px; }
-    .overlap-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg,#ff7faa,#c084fc); }
-    .overlap-score { font-size: 11px; color: #8f8f8f; }
-    .comparison-diff { font-size: 11px; color: #8f8f8f; margin-top: 5px; font-style: italic; line-height: 15px; }
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .bullet-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8f8f8f;
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+
+    .bullet-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626;
+      line-height: 22.75px;
+    }
 
     /* ── Bottom nav ── */
     .bottom-nav {
       flex-shrink: 0;
       width: 100%;
       height: 68px;
-      background: rgba(252,239,222,0.92);
+      background: rgba(252, 239, 222, 0.92);
       backdrop-filter: blur(10px);
       border-top: 1px solid rgba(0,0,0,0.1);
       display: flex;
@@ -178,99 +339,196 @@
       justify-content: space-between;
       padding: 0 39px;
     }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; cursor: pointer; }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
     .nav-icon { width: 24px; height: 24px; }
-    .nav-label { font-size: 12px; color: #8f8f8f; }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 400;
+      color: #8f8f8f;
+      line-height: 16px;
+    }
+
     .nav-label--active { color: #ff7faa; }
   </style>
-<style>body{padding:0!important;margin:0!important;display:block!important;min-height:100%!important;}.page,.phone{border-radius:0!important;box-shadow:none!important;width:393px!important;height:844px!important;}::-webkit-scrollbar{display:none!important;}*{scrollbar-width:none!important;}</style></head>
+</head>
 <body>
 <div class="page">
   <div class="page-scroll">
 
+    <!-- Top bar -->
     <div class="topbar">
       <a href="user-ecosystem.html" class="back-btn">← Back</a>
+      <img class="topbar-deco"
+           src="./assets/df1665f3acd82de30bb7f60478cfd00c61169a80.png"
+           alt="" />
     </div>
 
+    <!-- Page heading -->
     <div class="page-header">
-      <h1 class="page-title" id="eco-name">Ecosystem</h1>
-      <p class="page-subtitle" id="eco-subtitle">Loading...</p>
+      <h1 class="page-title">Family</h1>
+      <p class="page-subtitle">5 people in this ecosystem</p>
     </div>
 
     <!-- Filter tabs -->
     <div class="filter-tabs">
-      <a href="group-overview.html"       class="filter-tab filter-tab--active">All</a>
-      <a href="group-entertainment.html"  class="filter-tab">Entertainment</a>
-      <a href="group-wellness.html"       class="filter-tab">Wellness</a>
-      <span class="filter-tab">Politics</span>
-      <span class="filter-tab">Education</span>
+      <button class="filter-tab filter-tab--active">All</button>
+      <a href="group-entertainment.html" class="filter-tab filter-tab--ghost">Entertainment</a>
+      <a href="group-wellness.html" class="filter-tab filter-tab--ghost">Wellness</a>
+      <a href="#" class="filter-tab filter-tab--ghost">Politics</a>
+      <a href="#" class="filter-tab filter-tab--ghost">Education</a>
     </div>
 
-    <!-- Viz card -->
-    <div class="viz-card" id="viz-card">
-      <div class="viz-venn" id="viz-venn"></div>
+    <!-- ── Visualization card ── -->
+    <div class="viz-card">
+
+      <!--
+        Circles rendered bottom-to-top (later in DOM = on top).
+        Positions mirror Figma's absolute layout within the 345×332px card.
+        The outer "family" circles are large SVGs with translucent colors;
+        they overlap to form the venn-diagram clustering effect.
+      -->
+
+      <!-- Outermost family circle (300×300) -->
+      <img class="vc" src="./assets/155d8ace5db890451e14df9fba6983411433f848.svg"
+           style="left:23px; top:-10px; width:300px; height:300px;" alt="" />
+
+      <!-- Large inner (200×200) -->
+      <img class="vc" src="./assets/dee964adcae9557eae6822ed592ec189b6def1d0.svg"
+           style="left:73px; top:40px; width:200px; height:200px;" alt="" />
+
+      <!-- Medium (150×150) -->
+      <img class="vc" src="./assets/e1e700524411c7041cd60a3b4e75bdb2aae5a739.svg"
+           style="left:97px; top:64px; width:150px; height:150px;" alt="" />
+
+      <!-- Inner (100×100) -->
+      <img class="vc" src="./assets/a65262aad739a2470ea4349e1100f617f3d1de17.svg"
+           style="left:123px; top:89px; width:100px; height:100px;" alt="" />
+
+      <!-- "You" circle (50px parent + 4% inset bleed → ~58px wide) -->
+      <img class="vc" src="./assets/246a0f3a8e4e76c14ee6df1fd035e864ef8d1f77.svg"
+           style="left:119px; top:89px; width:108px; height:108px;" alt="" />
+
+      <!-- Mom circle (100px parent + 4% inset → ~108px) -->
+      <img class="vc" src="./assets/3644733f11e28ddae9914211535ef5730fc9ffd2.svg"
+           style="left:36px; top:68px; width:108px; height:112px;" alt="" />
+
+      <!-- Alex circle at top (110px parent, partially clipped) -->
+      <img class="vc" src="./assets/b9d66c55f176e47a31ab705752feb08f35fe415f.svg"
+           style="left:119px; top:-54px; width:118px; height:120px;" alt="" />
+
+      <!-- Dad circle (75px parent + 5.33% inset → ~83px) -->
+      <img class="vc" src="./assets/52c0bad298bd178215f0cdd7d65fe10999f43cb5.svg"
+           style="left:32px; top:157px; width:83px; height:91px;" alt="" />
+
+      <!-- Gma circle (50px parent + 8% inset → ~58px) -->
+      <img class="vc" src="./assets/bc9e52bd93f6bf272b9f1cc19f13ac835536d91d.svg"
+           style="left:228px; top:95px; width:58px; height:66px;" alt="" />
+
+      <!-- Name labels (white/translucent, bold 12px) -->
+      <span class="viz-label" style="left:167px; top: 0px;">Alex</span>
+      <span class="viz-label" style="left: 75px; top:114px;">Mom</span>
+      <span class="viz-label" style="left:162px; top:131px;">You</span>
+      <span class="viz-label" style="left: 62px; top:189px;">Dad</span>
+      <span class="viz-label" style="left:243px; top:112px;">Gma</span>
+
+      <!-- Cream info strip — wide pill bleeds beyond card edges, clipped naturally -->
       <div class="viz-info-strip">
-        <p class="viz-info-line" id="viz-line1"></p>
-        <p class="viz-info-line" id="viz-line2"></p>
+        <p class="viz-info-line">You align most with Mom</p>
+        <p class="viz-info-line">You are Furthest from Dad</p>
+      </div>
+
+    </div><!-- /viz-card -->
+
+    <!-- ── Group Diversity card ── -->
+    <div class="diversity-card">
+      <div class="info-icon">i</div>
+      <div>
+        <p class="diversity-title">Group Diversity: High</p>
+        <p class="diversity-desc">This group has multiple distinct content clusters with no single dominant perspective</p>
       </div>
     </div>
 
-    <!-- Lower cards -->
+    <!-- ── Lower info cards ── -->
     <div class="lower-cards">
 
       <!-- Legend -->
       <div class="info-card">
         <p class="section-label">Legend</p>
         <div class="legend-rows">
+
           <div class="legend-row">
-            <div class="legend-dot-lg" id="legend-dot" style="background:#ff7faa"></div>
-            <div>
+            <div class="legend-circle-lg"></div>
+            <div class="legend-text-wrap">
               <p class="legend-text-title">Bubble Size</p>
               <p class="legend-text-sub">Represents time spent and engagement</p>
             </div>
           </div>
+
           <div class="legend-row">
-            <div class="legend-dots-sm" id="member-legend"></div>
-            <div>
+            <div class="legend-dots-sm">
+              <div class="legend-dot legend-dot--orange"></div>
+              <div class="legend-dot legend-dot--green"></div>
+              <div class="legend-dot legend-dot--purple"></div>
+            </div>
+            <div class="legend-text-wrap">
               <p class="legend-text-title">Colors</p>
               <p class="legend-text-sub">Different members</p>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- Member comparisons -->
-      <div class="info-card info-card--white" id="comparisons-card" style="display:none">
-        <p class="section-label">Member Overlap</p>
-        <div class="comparison-grid" id="comparisons-grid"></div>
-      </div>
-
-      <!-- Key themes -->
+      <!-- Key Common Themes -->
       <div class="info-card info-card--white">
         <p class="section-label">Key Common Themes This Week</p>
-        <div class="theme-tags" id="key-themes"></div>
+        <div class="theme-tags">
+          <span class="theme-tag">Pop Culture</span>
+          <span class="theme-tag">Fashion &amp; Beauty</span>
+          <span class="theme-tag">Tech Innovation</span>
+          <span class="theme-tag">Wellness</span>
+          <span class="theme-tag">Social Justice</span>
+          <span class="theme-tag">Art &amp; Creativity</span>
+        </div>
       </div>
 
-      <!-- Group summary -->
-      <div class="info-card info-card--white" id="summary-card" style="display:none">
-        <p class="section-label">Group Summary</p>
-        <p class="bullet-text" id="group-summary"></p>
-      </div>
-
-      <!-- How determined -->
+      <!-- How This Is Determined -->
       <div class="info-card info-card--cream">
         <p class="section-label">How This Is Determined</p>
         <div class="bullet-list">
-          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Number of common hashtags, communities, and themes identified</p></div>
-          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Topic overlap and message similarity across posts</p></div>
-          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Community clustering and interconnected networks</p></div>
-          <div class="bullet-item"><div class="bullet-dot"></div><p class="bullet-text">Frequency of reinforcing vs. contrasting viewpoints</p></div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Number of common hashtags, communities, and themes identified</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Topic overlap and message similarity across posts</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Community clustering and interconnected networks</p>
+          </div>
+          <div class="bullet-item">
+            <div class="bullet-dot"></div>
+            <p class="bullet-text">Frequency of reinforcing vs. contrasting viewpoints</p>
+          </div>
         </div>
       </div>
 
-    </div>
-  </div>
+    </div><!-- /lower-cards -->
+  </div><!-- /page-scroll -->
 
+  <!-- Bottom nav — Ecosystem tab active -->
   <nav class="bottom-nav">
     <a href="user-dashboard.html" class="nav-item">
       <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
@@ -290,66 +548,5 @@
     </div>
   </nav>
 </div>
-
-<script>
-  const eco = EcoHelpers.getActiveEco();
-
-  if (!eco) {
-    document.getElementById('eco-name').textContent = 'No ecosystem';
-    document.getElementById('eco-subtitle').textContent = 'Create one first';
-  } else {
-    const ba      = EcoHelpers.getBlend(eco);
-    const members = eco.members || [];
-    const name    = eco.name || EcoHelpers.generateName(eco.blend_data);
-
-    // Header
-    document.getElementById('eco-name').textContent     = name;
-    document.getElementById('eco-subtitle').textContent = `${members.length} people in this ecosystem`;
-
-    // Venn
-    document.getElementById('viz-venn').innerHTML = EcoHelpers.vennSVG(members, 280, 240);
-
-    // Info strip
-    const align = EcoHelpers.alignText(eco);
-    const fp    = ba.furthest_pair?.members;
-    document.getElementById('viz-line1').textContent = align || `${members.length} members`;
-    document.getElementById('viz-line2').textContent = fp?.length >= 2
-      ? `Most different: ${EcoHelpers.clean(fp[0])} & ${EcoHelpers.clean(fp[1])}`
-      : EcoHelpers.diversityLabel(eco);
-
-    // Member legend dots
-    const legendDots = document.getElementById('member-legend');
-    legendDots.innerHTML = members.slice(0,4).map((m,i) =>
-      `<div class="legend-dot-sm" style="background:${EcoHelpers.colorFor(m,i)}"></div>`
-    ).join('');
-
-    // Key themes
-    const themes = ba.key_common_themes || [];
-    document.getElementById('key-themes').innerHTML = themes.length
-      ? themes.map(t => `<span class="theme-tag">${t}</span>`).join('')
-      : '<span class="theme-tag">Loading...</span>';
-
-    // Member comparisons
-    const comps = ba.member_comparisons || [];
-    if (comps.length) {
-      document.getElementById('comparisons-card').style.display = 'block';
-      document.getElementById('comparisons-grid').innerHTML = comps.slice(0,4).map(c => `
-        <div class="comparison-card">
-          <p class="comparison-names">${EcoHelpers.clean(c.member_a)} × ${EcoHelpers.clean(c.member_b)}</p>
-          <div class="overlap-track">
-            <div class="overlap-fill" style="width:${c.overlap_score||0}%"></div>
-          </div>
-          <p class="overlap-score">${c.overlap_score||0}% overlap</p>
-          <p class="comparison-diff">${c.key_difference||''}</p>
-        </div>`).join('');
-    }
-
-    // Group summary
-    if (ba.group_summary) {
-      document.getElementById('summary-card').style.display = 'block';
-      document.getElementById('group-summary').textContent = ba.group_summary;
-    }
-  }
-</script>
 </body>
 </html>

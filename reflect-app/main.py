@@ -9,6 +9,7 @@ import json
 import random
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -250,6 +251,19 @@ def parse_tiktok_json(data: dict) -> dict:
         except (ValueError, TypeError):
             continue
 
+    # ── Day of week counts ─────────────────────────────────
+    DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+    daily_counts = {d: 0 for d in DAYS}
+    for video in watch_videos:
+        date_str = video.get("Date") or video.get("date", "")
+        if not date_str:
+            continue
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            daily_counts[dt.strftime("%A")] += 1
+        except (ValueError, TypeError):
+            continue
+
     if current_session > 0 and parsed_times:
         sessions.append(current_session)
 
@@ -288,7 +302,7 @@ def parse_tiktok_json(data: dict) -> dict:
         "peak_hours": peak_hours, "avg_session_videos": avg_session,
         "num_sessions": num_sessions, "like_rate": like_rate,
         "save_rate": save_rate, "devices": list(devices),
-        "networks": list(networks)
+        "networks": list(networks), "daily_counts": daily_counts,
     }
 
 # ── Section 7: Build prompt and run inference ──────────
@@ -452,7 +466,8 @@ async def upload_json(file: UploadFile = File(...)):
         "like_rate": parsed["like_rate"],
         "save_rate": parsed["save_rate"],
         "devices": parsed["devices"],
-        "networks": parsed["networks"]
+        "networks": parsed["networks"],
+        "daily_counts": parsed["daily_counts"],
     }
 
     searches_text = "\n".join([f"- {s}" for s in parsed["searches"]])
@@ -916,6 +931,53 @@ async def receipt_print(count: int = 1):
 app.mount("/prototype", StaticFiles(
     directory=os.path.join(os.path.dirname(__file__), "templates", "prototype")
 ), name="prototype")
+
+# ── Section 12: Explore word lookup endpoint ──────────
+class ExploreRequest(BaseModel):
+    word: str
+    context_themes: str = ""
+    username: str = "User"
+
+@app.post("/api/explore")
+async def explore_word(req: ExploreRequest):
+    prompt = f"""
+    You are helping a user understand a word or phrase that appeared in their TikTok feed.
+
+    Word/phrase: "{req.word}"
+    User's feed themes: {req.context_themes}
+    Username: {req.username}
+
+    Return ONLY valid JSON:
+    {{
+        "word": "{req.word}",
+        "category": "Social Media Trend / Cultural Term / Political Term / Wellness Term / Gaming Term / Other",
+        "definition": "Clear 2-3 sentence explanation of what this means, accessible to anyone",
+        "feed_context": "1 sentence explaining why this might appear in their feed given their themes",
+        "related": [
+            {{"term": "related term 1", "description": "brief description"}},
+            {{"term": "related term 2", "description": "brief description"}},
+            {{"term": "related term 3", "description": "brief description"}}
+        ]
+    }}
+
+    Be clear, neutral, and informative. No judgment.
+    """
+
+    response = ai_client.messages.create(
+        model=AI_MODEL,
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    raw = response.content[0].text.strip()
+    try:
+        if "```" in raw:
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return {"word": req.word, "category": "Term", "definition": raw, "related": []}
 
 @app.on_event("startup")
 async def startup_event():

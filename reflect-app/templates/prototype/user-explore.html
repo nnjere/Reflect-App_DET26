@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=393px, initial-scale=1.0" />
+  <title>Explore — Translation Layer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="./js/reflect-data.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e0d5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+    }
+
+    .page {
+      width: 393px;
+      height: 844px;
+      background: #fef7e5;
+      border-radius: 44px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 8px 32px rgba(0,0,0,0.18);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Gradient background */
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #fef7e5 0%, #fde8e8 100%);
+      border-radius: 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .page-scroll::-webkit-scrollbar { display: none; }
+    .page-scroll { scrollbar-width: none; }
+
+    /* ── Header ── */
+    .header {
+      padding: 56px 24px 0;
+      margin-bottom: 20px;
+    }
+
+    .header-overline {
+      font-size: 14px;
+      color: #8f8f8f;
+      margin-bottom: 6px;
+    }
+
+    .header-title {
+      font-size: 34px;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 40px;
+      margin-bottom: 8px;
+    }
+
+    .header-desc {
+      font-size: 14px;
+      color: #8f8f8f;
+      line-height: 20px;
+    }
+
+    /* ── Search bar ── */
+    .search-bar {
+      margin: 0 21px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 9999px;
+      padding: 12px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .search-icon {
+      font-size: 15px;
+      color: #8f8f8f;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      background: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #0a0a0a;
+      outline: none;
+    }
+    .search-input::placeholder { color: #bbb; }
+
+    /* ── Section label ── */
+    .section-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 24px;
+      margin-bottom: 12px;
+    }
+
+    .section-star { font-size: 13px; color: #ff7faa; }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #8f8f8f;
+    }
+
+    /* ── Pill cloud ── */
+    .pill-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 21px;
+      margin-bottom: 28px;
+    }
+
+    .term-pill {
+      background: rgba(255,255,255,0.65);
+      border-radius: 9999px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 400;
+      color: #262626;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1.5px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .term-pill:hover,
+    .term-pill.active {
+      background: rgba(255,127,170,0.12);
+      border-color: rgba(255,127,170,0.35);
+      color: #0a0a0a;
+    }
+
+    /* ── Definition card ── */
+    .def-card {
+      margin: 0 21px 20px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      display: none;
+    }
+
+    .def-card.visible { display: block; }
+
+    .def-word {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0a0a0a;
+      margin-bottom: 3px;
+    }
+
+    .def-category {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ff7faa;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .def-text {
+      font-size: 14px;
+      color: #262626;
+      line-height: 22px;
+      margin-bottom: 12px;
+    }
+
+    .def-context-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #8f8f8f;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .def-context {
+      font-size: 13px;
+      color: #8f8f8f;
+      line-height: 20px;
+      font-style: italic;
+      padding-left: 12px;
+      border-left: 2px solid rgba(255,127,170,0.3);
+    }
+
+    .def-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #8f8f8f;
+      font-size: 14px;
+    }
+
+    .def-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,127,170,0.2);
+      border-top-color: #ff7faa;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── From your feed section ── */
+    .feed-section { margin-bottom: 8px; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      flex-shrink: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(252,239,222,0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 39px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; cursor: pointer; }
+    .nav-icon { width: 24px; height: 24px; }
+    .nav-label { font-size: 12px; color: #8f8f8f; }
+    .nav-label--active { color: #ff7faa; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="page-scroll">
+
+    <div class="header">
+      <p class="header-overline">Explore</p>
+      <h1 class="header-title">Translation Layer</h1>
+      <p class="header-desc">Understand the language of online communities</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input" type="text"
+             placeholder="Search for slang, trends, or phrases..." />
+    </div>
+
+    <!-- Trending terms — static curated list -->
+    <div class="section-row">
+      <span class="section-star">✦</span>
+      <span class="section-label">Trending terms</span>
+    </div>
+
+    <div class="pill-cloud" id="trending-pills">
+      <span class="term-pill" onclick="lookup('no cap', this)">no cap</span>
+      <span class="term-pill" onclick="lookup('rizz', this)">rizz</span>
+      <span class="term-pill" onclick="lookup('touch grass', this)">touch grass</span>
+      <span class="term-pill" onclick="lookup('based', this)">based</span>
+      <span class="term-pill" onclick="lookup('gaslight gatekeep girlboss', this)">gaslight gatekeep girlboss</span>
+      <span class="term-pill" onclick="lookup('chronically online', this)">chronically online</span>
+      <span class="term-pill" onclick="lookup('main character', this)">main character</span>
+      <span class="term-pill" onclick="lookup('delulu', this)">delulu</span>
+      <span class="term-pill" onclick="lookup('understood the assignment', this)">understood the assignment</span>
+      <span class="term-pill" onclick="lookup('rent free', this)">rent free</span>
+    </div>
+
+    <!-- Definition card -->
+    <div class="def-card" id="def-card">
+      <div id="def-content"></div>
+    </div>
+
+    <!-- From your feed -->
+    <div class="feed-section" id="feed-section" style="display:none">
+      <div class="section-row">
+        <span class="section-star">✦</span>
+        <span class="section-label">From your feed</span>
+      </div>
+      <div class="pill-cloud" id="feed-pills"></div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <img class="nav-icon" src="./assets/4dee62e3b1dfe7841f8952ff6bece9ff93122d39.svg" alt="Home" />
+      <span class="nav-label">Home</span>
+    </a>
+    <a href="user-ecosystem.html" class="nav-item">
+      <img class="nav-icon" src="./assets/7b89d414e36ba6c45c8f6c3d33950e15c883f55f.svg" alt="Ecosystem" />
+      <span class="nav-label">Ecosystem</span>
+    </a>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/45ee2892b52b4198fff7306a397b9d6f0107e7a8.svg" alt="Explore" />
+      <span class="nav-label nav-label--active">Explore</span>
+    </div>
+    <div class="nav-item">
+      <img class="nav-icon" src="./assets/bdfa2e457b6ca641c615d21d1d10db3d663cd047.svg" alt="Reflect" />
+      <span class="nav-label">Reflect</span>
+    </div>
+  </nav>
+</div>
+
+<script>
+  // ── Feed terms from report ──────────────────────────
+  const report = Reflect.getReport();
+  if (report) {
+    const summary = Reflect.getDataSummary(report);
+    const echo    = Reflect.getEchoChamber(report);
+    const terms   = [
+      ...(summary.top_searches || []).slice(0,8),
+      ...(echo.key_themes || []).slice(0,4),
+    ].filter((v,i,a) => v && a.indexOf(v) === i).slice(0,10);
+
+    if (terms.length) {
+      document.getElementById('feed-section').style.display = 'block';
+      document.getElementById('feed-pills').innerHTML = terms.map(t =>
+        `<span class="term-pill" onclick="lookup('${t.replace(/'/g,"\\'")}',this)">${t}</span>`
+      ).join('');
+    }
+  }
+
+  // ── Search on Enter ─────────────────────────────────
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const v = e.target.value.trim();
+      if (v) lookup(v, null);
+    }
+  });
+
+  // ── Lookup word ─────────────────────────────────────
+  async function lookup(word, pill) {
+    document.querySelectorAll('.term-pill').forEach(p => p.classList.remove('active'));
+    if (pill) pill.classList.add('active');
+
+    const card    = document.getElementById('def-card');
+    const content = document.getElementById('def-content');
+    card.classList.add('visible');
+    content.innerHTML = `<div class="def-loading"><div class="def-spinner"></div>&nbsp;Looking up "<strong>${word}</strong>"…</div>`;
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    try {
+      const themes = report ? Reflect.getThemes(report).map(t => t.theme).join(', ') : '';
+      const res = await fetch('/api/explore', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ word, context_themes: themes, username: '' })
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      content.innerHTML = `
+        <p class="def-word">${data.word || word}</p>
+        <p class="def-category">${data.category || 'Online Term'}</p>
+        <p class="def-text">${data.definition || ''}</p>
+        ${data.feed_context ? `
+          <p class="def-context-label">In context</p>
+          <p class="def-context">${data.feed_context}</p>` : ''}`;
+    } catch(e) {
+      content.innerHTML = `
+        <p class="def-word">${word}</p>
+        <p class="def-category">Online Term</p>
+        <p class="def-text">This term or phrase circulates in online communities. It may be slang, a meme, a cultural reference, or a trending topic.</p>
+        <p class="def-context-label">Tip</p>
+        <p class="def-context">Try searching this on TikTok or Urban Dictionary for more context.</p>`;
+    }
+  }
+</script>
+</body>
+</html>
